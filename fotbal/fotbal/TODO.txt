@@ -1,0 +1,5 @@
+﻿1/ scor la victorii
+2/ moduri de joc:
+		-bot-ul incearca sa piarda, cate miscari face pana pierde/da gol
+
+
