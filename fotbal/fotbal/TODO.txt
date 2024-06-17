@@ -2,4 +2,4 @@
 2/ moduri de joc:
 		-bot-ul incearca sa piarda, cate miscari face pana pierde/da gol
 
-
+3/ pe linia portii linia nu are dimensiunea buna

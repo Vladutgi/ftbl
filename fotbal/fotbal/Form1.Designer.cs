@@ -1150,7 +1150,7 @@
             restart_btn.TabIndex = 108;
             restart_btn.Text = "Restart";
             restart_btn.UseVisualStyleBackColor = false;
-            restart_btn.Click += restart_btn_Click;
+            restart_btn.Click += Restart_btn_Click;
             // 
             // poartaBlue
             // 
@@ -1299,7 +1299,7 @@
             Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(BallPB);
-            FormBorderStyle = FormBorderStyle.FixedSingle;
+            FormBorderStyle = FormBorderStyle.None;
             MaximizeBox = false;
             Name = "Form1";
             ShowIcon = false;

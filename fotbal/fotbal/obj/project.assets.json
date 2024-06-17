@@ -8,23 +8,23 @@
     "net6.0-windows7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\vlad\\.nuget\\packages\\": {},
+    "C:\\Users\\vladu\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\vlad\\source\\repos\\ftbl\\fotbal\\fotbal\\fotbal.csproj",
+      "projectUniqueName": "C:\\Users\\vladu\\Source\\Repos\\ftbl\\fotbal\\fotbal\\fotbal.csproj",
       "projectName": "fotbal",
-      "projectPath": "C:\\Users\\vlad\\source\\repos\\ftbl\\fotbal\\fotbal\\fotbal.csproj",
-      "packagesPath": "C:\\Users\\vlad\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\vlad\\source\\repos\\ftbl\\fotbal\\fotbal\\obj\\",
+      "projectPath": "C:\\Users\\vladu\\Source\\Repos\\ftbl\\fotbal\\fotbal\\fotbal.csproj",
+      "packagesPath": "C:\\Users\\vladu\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\vladu\\Source\\Repos\\ftbl\\fotbal\\fotbal\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\vlad\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\vladu\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -34,7 +34,8 @@
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "C:\\Program Files\\dotnet\\library-packs": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {},
+        "https://pkgs.dev.azure.com/vladutgi/_packaging/vladutgi/nuget/v3/index.json": {}
       },
       "frameworks": {
         "net6.0-windows7.0": {
@@ -70,7 +71,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
       }
     }
   }
