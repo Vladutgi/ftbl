@@ -5,28 +5,34 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Install .NET SDK'
+- task: NuGetToolInstaller@1
+  displayName: 'Install NuGet'
   inputs:
-    packageType: 'sdk'
-    version: '5.x'  # Replace with the appropriate .NET SDK version
+    versionSpec: '5.x'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Restore dependencies'
+- task: NuGetCommand@2
+  displayName: 'Restore NuGet packages'
   inputs:
-    command: 'restore'
-    projects: '**/*.csproj'  # Adjust the pattern to match your project structure
+    restoreSolution: '**/*.sln'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Run application'
+- task: VSBuild@1
+  displayName: 'Build solution'
   inputs:
-    command: 'run'
-    projects: '**/*.csproj'  # Adjust the pattern to match your main application project
-    arguments: '--configuration Release'
+    solution: '**/*.sln'
+    platform: 'Any CPU'
+    configuration: 'Release'
 
-- task: PublishPipelineArtifact@1
-  displayName: 'Publish artifact'
+
+- task: CopyFiles@2
+  displayName: 'Copy artifacts'
   inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)'
-    artifact: 'drop'
-    publishLocation: 'pipeline'
+    SourceFolder: 'fotbal\\fotbal\\bin\\Release'
+    Contents: '**' # Adjust the pattern to match your application executable
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/deploy'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish deployable artifacts'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/deploy'
+    ArtifactName: 'deploy'
+    publishLocation: 'Container'
