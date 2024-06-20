@@ -27,7 +27,7 @@ namespace fotbal
             singlePlayer.Font = new Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
             singlePlayer.Width = 250;
             singlePlayer.Height = 100;
-            singlePlayer.Bounds = new Rectangle(this.Width / 2 - singlePlayer.Width / 2, 300, singlePlayer.Width, singlePlayer.Height);
+            singlePlayer.Location = new Point(this.ClientSize.Width / 2 - singlePlayer.Width / 2, 300);
             this.Controls.Add(singlePlayer);
             singlePlayer.BackColor = Color.Orange;
             singlePlayer.Click += new EventHandler(Computer_Clicked);
@@ -38,7 +38,7 @@ namespace fotbal
             local.Font = new Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
             local.Width = 250;
             local.Height = 100;
-            local.Bounds = new Rectangle(this.Width / 2 - local.Width / 2, 450, local.Width, local.Height);
+            local.Bounds = new Rectangle(this.ClientSize.Width / 2 - local.Width / 2, 450, local.Width, local.Height);
             local.Visible = true;
             this.Controls.Add(local);
             local.BackColor = Color.Orange;
@@ -57,13 +57,13 @@ namespace fotbal
             this.Controls.Add(localForm);
             localForm.Show();
         }
-        public void ChangeToComputer()
+        public void ChangeToDifficultyForm()
         {
-            Computer computer = new Computer();
-            computer.TopLevel = false;
-            computer.Dock = DockStyle.Fill;
-            this.Controls.Add(computer);
-            computer.Show();
+            DifficultyForm difficultyForm = new DifficultyForm();
+            difficultyForm.TopLevel = false;
+            difficultyForm.Dock = DockStyle.Fill;
+            this.Controls.Add(difficultyForm);
+            difficultyForm.Show();
         }
         private void Local_Clicked(object sender, EventArgs e)
         {
@@ -74,7 +74,7 @@ namespace fotbal
         private void Computer_Clicked(object sender, EventArgs e)
         {
             RemoveButtons();
-            ChangeToComputer();
+            ChangeToDifficultyForm();
 
         }
 

@@ -17,19 +17,25 @@ namespace fotbal
         private bool available = true;
         private bool intersects = false;
         private int btnCounter = 0;
+        private System.Windows.Forms.Timer botTimer;
         Random random = new Random();
-        public Computer()
+        private string selectedDifficulty = String.Empty;
+        public Computer(string difficulty)
         {
             InitializeComponent();
             this.DoubleBuffered = true;
             timer1.Start();
             AddButtons();
-            BallPB.SetBounds(252 - 20 / 4, 362 - 20 / 4, BallPB.Width, BallPB.Height);
+            BallPB.SetBounds(247, 357, BallPB.Width, BallPB.Height);
             Rand.Text = $"Red's Turn";
             Rand.TextChanged += new EventHandler(Rand_TextChanged);
             servicii = new Servicii(this, BallPB.Width, BallPB.Height, 20, 20, 58, 56, BallPB);
             servicii.CallTheBorder();
 
+            botTimer = new System.Windows.Forms.Timer();
+            botTimer.Interval = 1000;
+            botTimer.Tick += BotTimer_Tick;
+            selectedDifficulty = difficulty;
         }
 
         private void AddButtons()
@@ -159,6 +165,7 @@ namespace fotbal
                     GolLabel.ForeColor = Color.White;
                     GolLabel.Visible = true;
                     timer1.Stop();
+                    botTimer.Stop();
                 }
             }
         }
@@ -280,34 +287,73 @@ namespace fotbal
                 //stanga jos
                 servicii.LinieStangaJos(x, y, a, b);
                 if (!intersects) { servicii.Turn(Rand); }
-            }
+            }          
         }
         private void BotMove()
         {
-            List<Button> butoane = new List<Button>();
+            List<Button> closestBTNs = new List<Button>();
+            double distantaMinima = double.MaxValue;
+            int goalX = poartaRed.Location.X;
+            int goalY = poartaRed.Location.Y;
+            int ballXLocation = BallPB.Location.X;
+            int ballYLocation = BallPB.Location.Y;
+
+
+
             foreach (Control control in this.Controls)
             {
-                if (control.Tag == "buton" && control.Visible == true)
+                if (control is Button button && control.Tag == "buton" && control.Visible == true)
                 {
-                    butoane.Add((Button)control);
+                    int btnXLocation = button.Location.X;
+                    int btnYLocation = button.Location.Y;
+
+                    double distanta = Math.Sqrt(Math.Pow(btnXLocation - goalX, 2) + Math.Pow(btnYLocation - goalY, 2));
+
+                    if (distanta < distantaMinima)
+                    {
+                        distantaMinima = distanta;
+                        closestBTNs.Clear();
+                        closestBTNs.Add(button);
+                    }
+                    else if (distanta == distantaMinima )
+                    {
+                        closestBTNs.Add(button);
+                    }
                 }
             }
-            if (butoane.Count != 0)
+
+            if(closestBTNs.Count > 0)
             {
-                butoane[random.Next(0,butoane.Count-1)].PerformClick();
+                closestBTNs[random.Next(0, closestBTNs.Count)].PerformClick();
             }
+            
         }
 
         private void Rand_TextChanged(object sender, EventArgs e)
         {
             if (Rand.Text.ToLower() == "blue's turn")
             {
+                botTimer.Start();
+            }
+            else
+            {
+                botTimer.Stop();
+            }
+        }
 
-                while (Rand.Text.ToLower() == "blue's turn")
+
+        private void BotTimer_Tick(object sender, EventArgs e)
+        {
+            if (Rand.Text.ToLower() == "blue's turn")
+            {
+                if (selectedDifficulty == "easy")
                 {
-
                     BotMove();
                 }
+            }
+            else
+            {
+                botTimer.Stop();
             }
         }
     }

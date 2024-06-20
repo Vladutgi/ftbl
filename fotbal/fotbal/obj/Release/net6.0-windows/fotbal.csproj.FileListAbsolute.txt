@@ -17,3 +17,4 @@ C:\Users\vladu\Source\Repos\ftbl\fotbal\fotbal\obj\Release\net6.0-windows\fotbal
 C:\Users\vladu\Source\Repos\ftbl\fotbal\fotbal\obj\Release\net6.0-windows\ref\fotbal.dll
 C:\Users\vladu\source\repos\ftbl\fotbal\fotbal\obj\Release\net6.0-windows\fotbal.Meniu.resources
 C:\Users\vladu\source\repos\ftbl\fotbal\fotbal\obj\Release\net6.0-windows\fotbal.Computer.resources
+C:\Users\vladu\source\repos\ftbl\fotbal\fotbal\obj\Release\net6.0-windows\fotbal.DifficultyForm.resources
