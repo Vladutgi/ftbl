@@ -5,34 +5,34 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
-- task: NuGetToolInstaller@1
-  displayName: 'Install NuGet'
+- task: UseDotNet@2
+  displayName: 'Install .NET SDK 6.x'
   inputs:
-    versionSpec: '6.x'
+    packageType: 'sdk'
+    version: '6.x'  # Replace with the appropriate .NET SDK version (e.g., 6.0.100)
 
-- task: NuGetCommand@2
-  displayName: 'Restore NuGet packages'
+- script: dotnet --list-sdks  # Optional: List installed SDKs for verification
+  displayName: 'List installed .NET SDKs'
+
+- script: dotnet --list-runtimes  # Optional: List installed .NET runtimes for verification
+  displayName: 'List installed .NET runtimes'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore dependencies'
   inputs:
-    restoreSolution: '**/*.sln'
+    command: 'restore'
+    projects: '**/*.csproj'  # Adjust the pattern to match your project structure
 
-- task: VSBuild@1
-  displayName: 'Build solution'
+- task: DotNetCoreCLI@2
+  displayName: 'Run application'
   inputs:
-    solution: '**/*.sln'
-    platform: 'Any CPU'
-    configuration: 'Release'
+    command: 'run'
+    projects: '**/*.csproj'  # Adjust the pattern to match your main application project
+    arguments: '--configuration Release'
 
-
-- task: CopyFiles@2
-  displayName: 'Copy artifacts'
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish artifact'
   inputs:
-    SourceFolder: 'fotbal\\fotbal\\bin\\Release'
-    Contents: '**' # Adjust the pattern to match your application executable
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/deploy'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish deployable artifacts'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/deploy'
-    ArtifactName: 'deploy'
-    publishLocation: 'Container'
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifact: 'drop'
+    publishLocation: 'pipeline'
