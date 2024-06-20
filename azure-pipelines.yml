@@ -1,0 +1,44 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: NuGetToolInstaller@1
+  displayName: 'Install NuGet'
+  inputs:
+    versionSpec: '5.x'
+
+- task: NuGetCommand@2
+  displayName: 'Restore NuGet packages'
+  inputs:
+    restoreSolution: '**/*.sln'
+
+- task: VSBuild@1
+  displayName: 'Build solution'
+  inputs:
+    solution: '**/*.sln'
+    platform: 'Any CPU'
+    configuration: 'Release'
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish artifact'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifact: 'drop'
+    publishLocation: 'pipeline'
+
+- task: CopyFiles@2
+  displayName: 'Copy artifacts'
+  inputs:
+    SourceFolder: 'fotbal\\fotbal\\bin\\Release'
+    Contents: '**' # Adjust the pattern to match your application executable
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/deploy'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish deployable artifacts'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/deploy'
+    ArtifactName: 'deploy'
+    publishLocation: 'Container'
