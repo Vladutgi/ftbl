@@ -10,7 +10,7 @@ steps:
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
-    version: '3.x'  # Replace with the appropriate .NET SDK version
+    version: '5.x'  # Replace with the appropriate .NET SDK version
 
 - script: dotnet restore
   displayName: 'Restore dependencies'
