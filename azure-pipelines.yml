@@ -1,0 +1,38 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET SDK 6.x'
+  inputs:
+    packageType: 'sdk'
+    version: '6.x'  # Replace with the appropriate .NET SDK version (e.g., 6.0.100)
+
+- script: dotnet --list-sdks  # Optional: List installed SDKs for verification
+  displayName: 'List installed .NET SDKs'
+
+- script: dotnet --list-runtimes  # Optional: List installed .NET runtimes for verification
+  displayName: 'List installed .NET runtimes'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore dependencies'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'  # Adjust the pattern to match your project structure
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run application'
+  inputs:
+    command: 'run'
+    projects: '**/*.csproj'  # Adjust the pattern to match your main application project
+    arguments: '--configuration Release'
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish artifact'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifact: 'drop'
+    publishLocation: 'pipeline'
