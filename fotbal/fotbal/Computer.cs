@@ -350,11 +350,124 @@ namespace fotbal
                 {
                     BotMove();
                 }
+                else if (selectedDifficulty == "hard")
+                {
+                    HardBotMove();
+                }
             }
             else
             {
                 botTimer.Stop();
             }
         }
+
+        private void HardBotMove()
+        {
+            List<Button> bestMoves = new List<Button>();
+            double bestScore = double.MinValue;
+
+            int goalX = poartaRed.Location.X;
+            int goalY = poartaRed.Location.Y;
+            int ballX = BallPB.Location.X;
+            int ballY = BallPB.Location.Y;
+
+            foreach (Control control in this.Controls)
+            {
+                if (control is Button button && control.Tag == "buton" && control.Visible)
+                {
+                    int btnX = button.Location.X;
+                    int btnY = button.Location.Y;
+                    double distanceToGoal = Math.Sqrt(Math.Pow(btnX - goalX, 2) + Math.Pow(btnY - goalY, 2));
+                    bool isBlockingMove = IsBlockingMove(button);
+                    bool isScoringMove = IsScoringMove(button);
+                    double score = EvaluateScore(distanceToGoal, isBlockingMove, isScoringMove);
+
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        bestMoves.Clear();
+                        bestMoves.Add(button);
+                    }
+                    else if (score == bestScore)
+                    {
+                        bestMoves.Add(button);
+                    }
+                }
+            }
+
+            if (bestMoves.Count > 0)
+            {
+                Button selectedMove = bestMoves[random.Next(bestMoves.Count)];
+                selectedMove.PerformClick(); 
+            }
+        }
+
+        private bool IsBlockingMove(Button button)
+        {
+            foreach (Control control in this.Controls)
+            {
+                if (control is PictureBox && control.Bounds.IntersectsWith(button.Bounds))
+                {
+                    return true; 
+                }
+            }
+            return false;
+        }
+
+        private bool IsScoringMove(Button button)
+        {
+            int btnX = button.Location.X;
+            int btnY = button.Location.Y;
+            int goalX = poartaRed.Location.X;
+            int goalY = poartaRed.Location.Y;
+            int ballX = BallPB.Location.X;
+            int ballY = BallPB.Location.Y;
+
+            double currentDistance = Math.Sqrt(Math.Pow(ballX - goalX, 2) + Math.Pow(ballY - goalY, 2));
+            double newDistance = Math.Sqrt(Math.Pow(btnX - goalX, 2) + Math.Pow(btnY - goalY, 2));
+
+            return newDistance < currentDistance;
+        }
+
+        private double EvaluateScore(double distanceToGoal, bool isBlockingMove, bool isScoringMove)
+        {
+
+            double distanceWeight = 1.0;
+            double blockingMoveWeight = 0.5;
+            double scoringMoveWeight = 0.7;
+            double score = distanceWeight * (1.0 / (distanceToGoal + 1)); 
+
+            if (isBlockingMove)
+            {
+                score += blockingMoveWeight;
+            }
+            if (isScoringMove)
+            {
+                score += scoringMoveWeight;
+            }
+
+            return score;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

@@ -41,7 +41,7 @@ namespace fotbal
             hard.Visible = true;
             this.Controls.Add(hard);
             hard.BackColor = Color.Orange;
-            //hard.Click += new EventHandler(Hard_Clicked);
+            hard.Click += new EventHandler(Hard_Clicked);
         }
 
         public void ChangeToEasy()
@@ -56,6 +56,20 @@ namespace fotbal
         {
             RemoveButtons();
             ChangeToEasy();
+
+        }
+        public void ChangeToHard()
+        {
+            Computer computer = new Computer("hard");
+            computer.TopLevel = false;
+            computer.Dock = DockStyle.Fill;
+            this.Controls.Add(computer);
+            computer.Show();
+        }
+        private void Hard_Clicked(object sender, EventArgs e)
+        {
+            RemoveButtons();
+            ChangeToHard();
 
         }
         public void RemoveButtons()
