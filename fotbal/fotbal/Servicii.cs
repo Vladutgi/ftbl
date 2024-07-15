@@ -97,7 +97,7 @@ namespace fotbal
 
             foreach (Control label in form.Controls)
             {
-                if (label is Label && (string)label.Tag == "linieVerticala")
+                if (label is Label && ((string)label.Tag == "linieVerticala" || (string)label.Tag == "LV"))
                 {
                     if (label.Bounds.Contains(midX, midY))
                     {
@@ -116,7 +116,7 @@ namespace fotbal
 
             foreach (Control label in form.Controls)
             {
-                if (label is Label && (string)label.Tag == "linieOrizontala")
+                if (label is Label && ((string)label.Tag == "linieOrizontala" || (string)label.Tag == "LO"))
                 {
                     if (label.Bounds.Contains(midX, midY))
                     {
@@ -134,7 +134,7 @@ namespace fotbal
         {
             foreach (Control pb in form.Controls)
             {
-                if (pb is PictureBox && pb.Tag != null && pb.Tag.ToString() == "centruJS")
+                if (pb is PictureBox && pb.Tag != null &&(pb.Tag.ToString() == "centruJS" || pb.Tag.ToString() == "CJS"))
                 {
                     // Calculate the center point of the PictureBox
                     int pbCenterX = pb.Left + pb.Width / 2;
@@ -161,7 +161,7 @@ namespace fotbal
         {
             foreach (Control pb in form.Controls)
             {
-                if (pb is PictureBox && pb.Tag != null && pb.Tag.ToString() == "centruSJ")
+                if (pb is PictureBox && pb.Tag != null && (pb.Tag.ToString() == "centruSJ" || pb.Tag.ToString() == "CSJ"))
                 {
                     // Calculate the center point of the PictureBox
                     int pbCenterX = pb.Left + pb.Width / 2;
@@ -823,10 +823,320 @@ namespace fotbal
 
 
 
+        ///////////////////////////////////////////////////
+        ///
 
 
 
 
+        public void LStangaImaginara(int x, int y, int a, int b)
+        {
+            
+                Label linie = new();
+                linie.Height = btnHeight / 2;
+                linie.Width = btnXdistance + btnWidth / 4 - linie.Height / 4;
+                linie.SetBounds(x + btnWidth / 2 - linie.Height * 2 / 4, y + linie.Height / 2, linie.Width, linie.Height);
+                linie.BackColor = Color.Black;
+                linie.Visible = true;
+                linie.Tag = "LO";
+                form.Controls.Add(linie);
+
+            IsThereALineImaginara(a + ballWidth, b + ballHeight);
+
+
+        }
+        public void LDreaptaImaginara(int x, int y, int a, int b)
+        {
+            
+                Label linie = new();
+                linie.Height = btnHeight / 2;
+                linie.Width = btnXdistance + btnWidth / 4 - linie.Height / 2;
+                linie.SetBounds(x - linie.Width / 2 - btnWidth - linie.Height / 8, y + linie.Height / 2, linie.Width, linie.Height);
+                linie.BackColor = Color.Black;
+                linie.Visible = true;
+                linie.Tag = "LO";
+                form.Controls.Add(linie);
+
+            IsThereALineImaginara(a + ballWidth, b + ballHeight);
+
+        }
+        public void LSusImaginara(int x, int y, int a, int b)
+        {
+            
+                Label linie = new();
+                linie.Width = btnHeight / 2;
+                linie.Height = btnYdistance + btnHeight / 4 - linie.Width / 2 + linie.Width / 8;
+                linie.SetBounds(x + linie.Width / 2, y + btnHeight / 2 - linie.Width / 2, linie.Width, linie.Height);
+                linie.BackColor = Color.Black;
+                linie.Visible = true;
+                linie.Tag = "LV";
+                form.Controls.Add(linie);
+
+            IsThereALineImaginara(a + ballWidth, b + ballHeight);
+
+        }
+        public void LJosImaginara(int x, int y, int a, int b)
+        {
+          
+                Label linie = new();
+                linie.Width = btnHeight / 2;
+                linie.Height = btnYdistance + btnHeight / 4 - linie.Width / 2 + linie.Width / 8;
+                linie.SetBounds(x + linie.Width / 2, y - linie.Height + btnHeight / 2 - linie.Width / 2 + linie.Width / 8, linie.Width, linie.Height);
+                linie.BackColor = Color.Black;
+                linie.Visible = true;
+                linie.Tag = "LV";
+                form.Controls.Add(linie);
+
+            IsThereALineImaginara(a + ballWidth, b + ballHeight);
+
+
+        }
+        public void LStangaJosImaginara(int x, int y, int a, int b)
+        {
+            int width = 90;
+            int height = 10;
+            int angleDegrees = -44; // Change the angle to rotate from bottom to top
+
+            double angleRadians = angleDegrees * Math.PI / 180;
+            double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
+            double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
+
+            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
+            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
+
+            Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
+
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                g.Clear(Color.Transparent);
+
+                g.TranslateTransform((float)bmpWidth / 2, (float)bmpHeight / 2);
+
+                g.RotateTransform((float)angleDegrees);
+
+                g.TranslateTransform(-(float)width / 2, -(float)height / 2);
+
+                Rectangle rect = new Rectangle(0, 0, width, height);
+
+                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
+                {
+                    g.FillRectangle(brush, rect);
+                }
+
+
+            }
+
+            bmp.MakeTransparent(Color.Transparent);
+
+            Rectangle targetRect = new Rectangle((x + a) / 2 - bmp.Width / 2 + btnWidth / 4, (y + b) / 2 - bmp.Height / 2 + btnHeight, bmp.Width, bmp.Height);
+            using (Graphics g = form.CreateGraphics())
+            {
+                g.DrawImage(bmp, targetRect);
+            }
+
+            bmp.Dispose();
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.BackColor = Color.Blue;
+            pictureBox.Size = new Size(10, 10);
+            pictureBox.Location = new Point((x + a) / 2 + btnWidth / 4, (y + b) / 2 + btnHeight / 2);
+            pictureBox.Tag = "CJS";
+            pictureBox.Visible = false;
+
+            form.Controls.Add(pictureBox);
+            IsThereALineImaginara(a + ballWidth, b + ballHeight);
+
+        }
+
+
+
+
+
+        public void LStangaSusImaginara(int x, int y, int a, int b)//
+        {
+            int width = 90;
+            int height = 10;
+            int angleDegrees = 44; // Change the angle to rotate from bottom to top
+
+            double angleRadians = angleDegrees * Math.PI / 180;
+            double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
+            double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
+
+            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
+            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
+
+            Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
+
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                g.Clear(Color.Transparent);
+
+                g.TranslateTransform((float)bmpWidth / 2, (float)bmpHeight / 2);
+
+                g.RotateTransform((float)angleDegrees);
+
+                g.TranslateTransform(-(float)width / 2, -(float)height / 2);
+
+                Rectangle rect = new Rectangle(0, 0, width, height);
+
+                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
+                {
+                    g.FillRectangle(brush, rect);
+                }
+            }
+
+            bmp.MakeTransparent(Color.Transparent);
+
+            Rectangle targetRect = new Rectangle((x + a) / 2 - bmp.Width / 2 + btnWidth, (y + b) / 2 - bmp.Height / 2 + btnHeight, bmp.Width, bmp.Height);
+            using (Graphics g = form.CreateGraphics())
+            {
+                g.DrawImage(bmp, targetRect);
+            }
+
+            bmp.Dispose();
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.BackColor = Color.Blue;
+            pictureBox.Size = new Size(10, 10);
+            pictureBox.Location = new Point((x + a) / 2 + btnWidth / 4, (y + b) / 2 + btnHeight / 2);
+            pictureBox.Tag = "CSJ";
+            pictureBox.Visible = false;
+
+            form.Controls.Add(pictureBox);
+            IsThereALineImaginara(a + ballWidth, b + ballHeight);
+
+        }
+        public void LDreaptaJosImaginara(int x, int y, int a, int b)//
+        {
+            int width = 90;
+            int height = 10;
+            int angleDegrees = 44; // Change the angle to rotate from bottom to top
+
+            double angleRadians = angleDegrees * Math.PI / 180;
+            double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
+            double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
+
+            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
+            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
+
+            Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
+
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                g.Clear(Color.Transparent);
+
+                g.TranslateTransform((float)bmpWidth / 2, (float)bmpHeight / 2);
+
+                g.RotateTransform((float)angleDegrees);
+
+                g.TranslateTransform(-(float)width / 2, -(float)height / 2);
+
+                Rectangle rect = new Rectangle(0, 0, width, height);
+
+                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
+                {
+                    g.FillRectangle(brush, rect);
+                }
+            }
+
+            bmp.MakeTransparent(Color.Transparent);
+
+            Rectangle targetRect = new Rectangle((x + a) / 2 - bmp.Width / 2 + btnWidth, (y + b) / 2 - bmp.Height / 2 + btnHeight, bmp.Width, bmp.Height);
+            using (Graphics g = form.CreateGraphics())
+            {
+                g.DrawImage(bmp, targetRect);
+            }
+
+            bmp.Dispose();
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.BackColor = Color.Blue;
+            pictureBox.Size = new Size(10, 10);
+            pictureBox.Location = new Point((x + a) / 2 + btnWidth / 4, (y + b) / 2 + btnHeight / 2);
+            pictureBox.Tag = "CSJ";
+            pictureBox.Visible = false;
+
+            form.Controls.Add(pictureBox);
+            IsThereALineImaginara(a + ballWidth, b + ballHeight);
+
+        }
+        public void LDreaptaSusImaginara(int x, int y, int a, int b)//
+        {
+            int width = 90;
+            int height = 10;
+            int angleDegrees = -44; // Change the angle to rotate from bottom to top
+
+            double angleRadians = angleDegrees * Math.PI / 180;
+            double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
+            double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
+
+            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
+            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
+
+            Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
+
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                g.Clear(Color.Transparent);
+
+                g.TranslateTransform((float)bmpWidth / 2, (float)bmpHeight / 2);
+
+                g.RotateTransform((float)angleDegrees);
+
+                g.TranslateTransform(-(float)width / 2, -(float)height / 2);
+
+                Rectangle rect = new Rectangle(0, 0, width, height);
+
+                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
+                {
+                    g.FillRectangle(brush, rect);
+                }
+            }
+
+            bmp.MakeTransparent(Color.Transparent);
+
+            Rectangle targetRect = new Rectangle((x + a) / 2 - bmp.Width / 2 + btnWidth / 4, (y + b) / 2 - bmp.Height / 2 + btnHeight, bmp.Width, bmp.Height);
+            using (Graphics g = form.CreateGraphics())
+            {
+                g.DrawImage(bmp, targetRect);
+            }
+
+            bmp.Dispose();
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.BackColor = Color.Blue;
+            pictureBox.Size = new Size(10, 10);
+            pictureBox.Location = new Point((x + a) / 2 + btnWidth / 4, (y + b) / 2 + btnHeight / 2);
+            pictureBox.Tag = "CJS";
+            pictureBox.Visible = false;
+            form.Controls.Add(pictureBox);
+
+            IsThereALineImaginara(a + ballWidth, b + ballHeight);
+        }
+
+
+        public void IsThereALineImaginara(int x, int y)
+        {
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.SetBounds(x - ballWidth / 2 - 5, y - ballHeight / 2 - 5, 10, 10);
+            pictureBox.BackColor = Color.Magenta;
+            pictureBox.Tag = "intersectieImaginara";
+            pictureBox.Visible = false;
+            form.Controls.Add(pictureBox);
+            pictureBox.BringToFront();
+        }
 
 
 

@@ -20,6 +20,7 @@ namespace fotbal
         private System.Windows.Forms.Timer botTimer;
         Random random = new Random();
         private string selectedDifficulty = String.Empty;
+
         public Computer(string difficulty)
         {
             InitializeComponent();
@@ -36,6 +37,7 @@ namespace fotbal
             botTimer.Interval = 1000;
             botTimer.Tick += BotTimer_Tick;
             selectedDifficulty = difficulty;
+            AllBallsCB.CheckedChanged += SchimbaVizibilitatea;
         }
 
         private void AddButtons()
@@ -110,26 +112,25 @@ namespace fotbal
 
             if (AllBallsCB.Checked == true && GolLabel.Visible == false)
             {
+                botTimer.Enabled = false;
                 servicii.ToateButoanele();
                 foreach (Control Btn in this.Controls)
                 {
                     if (Btn is Button && (String)Btn.Tag == "buton")
                     {
+                        Btn.BackColor = Color.Green;
                         Btn.Enabled = false;
                     }
                 }
             }
             else
             {
-                if (GolLabel.Visible == false)
+                if (GolLabel.Visible == false && AllBallsCB.Checked == false)
                 {
                     servicii.Mutare();
-                    foreach (Control Btn in this.Controls)
+                    if(Rand.Text.ToLower()=="red's turn")
                     {
-                        if (Btn is Button && (String)Btn.Tag == "buton")
-                        {
-                            Btn.Enabled = true;
-                        }
+                        EnableButtons();
                     }
                 }
             }
@@ -208,6 +209,7 @@ namespace fotbal
             Rand.Visible = true;
             BallPB.SetBounds(252 - 20 / 4, 362 - 20 / 4, BallPB.Width, BallPB.Height);
             timer1.Start();
+            Rand.Text = "Red's Turn";
         }
 
         private void Restart_btn_Click(object sender, EventArgs e)
@@ -218,6 +220,7 @@ namespace fotbal
         }
         private void BTNClick(object sender, EventArgs e)
         {
+
             Button cb = (Button)sender;
             int x, y;
             x = cb.Location.X;
@@ -287,10 +290,13 @@ namespace fotbal
                 //stanga jos
                 servicii.LinieStangaJos(x, y, a, b);
                 if (!intersects) { servicii.Turn(Rand); }
-            }          
+            }
+
+
         }
         private void BotMove()
         {
+
             List<Button> closestBTNs = new List<Button>();
             double distantaMinima = double.MaxValue;
             int goalX = poartaRed.Location.X;
@@ -302,7 +308,7 @@ namespace fotbal
 
             foreach (Control control in this.Controls)
             {
-                if (control is Button button && control.Tag == "buton" && control.Visible == true)
+                if (control is Button button && (string)control.Tag == "buton" && control.Visible == true)
                 {
                     int btnXLocation = button.Location.X;
                     int btnYLocation = button.Location.Y;
@@ -315,29 +321,30 @@ namespace fotbal
                         closestBTNs.Clear();
                         closestBTNs.Add(button);
                     }
-                    else if (distanta == distantaMinima )
+                    else if (distanta == distantaMinima)
                     {
                         closestBTNs.Add(button);
                     }
                 }
             }
-
-            if(closestBTNs.Count > 0)
+            if (closestBTNs.Count > 0)
             {
-                closestBTNs[random.Next(0, closestBTNs.Count)].PerformClick();
+                Button selectedButton = closestBTNs[random.Next(closestBTNs.Count)];
+                BTNClick(selectedButton, EventArgs.Empty);
             }
-            
         }
 
         private void Rand_TextChanged(object sender, EventArgs e)
         {
             if (Rand.Text.ToLower() == "blue's turn")
             {
+                DisableButtons();  // Disable buttons during bot's turn
                 botTimer.Start();
             }
             else
             {
                 botTimer.Stop();
+                EnableButtons();  // Enable buttons during player's turn
             }
         }
 
@@ -346,13 +353,15 @@ namespace fotbal
         {
             if (Rand.Text.ToLower() == "blue's turn")
             {
+
                 if (selectedDifficulty == "easy")
                 {
+
                     BotMove();
                 }
-                else if (selectedDifficulty == "hard")
+                else if (selectedDifficulty == "medium")
                 {
-                    HardBotMove();
+                    MediumBotMove();
                 }
             }
             else
@@ -361,8 +370,9 @@ namespace fotbal
             }
         }
 
-        private void HardBotMove()
+        private void MediumBotMove()
         {
+
             List<Button> bestMoves = new List<Button>();
             double bestScore = double.MinValue;
 
@@ -397,8 +407,8 @@ namespace fotbal
 
             if (bestMoves.Count > 0)
             {
-                Button selectedMove = bestMoves[random.Next(bestMoves.Count)];
-                selectedMove.PerformClick(); 
+                Button selectedButton = bestMoves[random.Next(bestMoves.Count)];
+                BTNClick(selectedButton, EventArgs.Empty);
             }
         }
 
@@ -408,7 +418,7 @@ namespace fotbal
             {
                 if (control is PictureBox && control.Bounds.IntersectsWith(button.Bounds))
                 {
-                    return true; 
+                    return true;
                 }
             }
             return false;
@@ -435,7 +445,7 @@ namespace fotbal
             double distanceWeight = 1.0;
             double blockingMoveWeight = 0.5;
             double scoringMoveWeight = 0.7;
-            double score = distanceWeight * (1.0 / (distanceToGoal + 1)); 
+            double score = distanceWeight * (1.0 / (distanceToGoal + 1));
 
             if (isBlockingMove)
             {
@@ -455,19 +465,42 @@ namespace fotbal
 
 
 
+        private void DisableButtons()
+        {
+            foreach (Control control in this.Controls)
+            {
+                if (control is Button button && button.Tag == "buton")
+                {
+                    button.BackColor = Color.Green;
+                    button.Enabled = false;
+                }
+            }
+        }
+
+        private void EnableButtons()
+        {
+            foreach (Control control in this.Controls)
+            {
+                if (control is Button button && (string)button.Tag == "buton" && button.Bounds.IntersectsWith(new Rectangle(BallPB.Location.X - BallPB.Width / 2 - 100, BallPB.Location.Y - BallPB.Height / 2 - 100, 200, 200)))
+                {
+                    button.BackColor = Color.White;
+                    button.Enabled = true;
+                }
+            }
+        }
 
 
-
-
-
-
-
-
-
-
-
-
-
+        private void SchimbaVizibilitatea(object sender, EventArgs e)
+        {
+            if (Rand.Text.ToLower() == "blue's turn")
+            {
+                botTimer.Enabled = true;
+            }
+            else
+            {
+                EnableButtons();
+            }
+        }
 
     }
 }
