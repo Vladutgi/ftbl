@@ -338,13 +338,13 @@ namespace fotbal
         {
             if (Rand.Text.ToLower() == "blue's turn")
             {
-                DisableButtons();  // Disable buttons during bot's turn
+                DisableButtons();  
                 botTimer.Start();
             }
             else
             {
                 botTimer.Stop();
-                EnableButtons();  // Enable buttons during player's turn
+                EnableButtons();  
             }
         }
 
