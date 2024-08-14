@@ -29,7 +29,7 @@ namespace fotbal
             timer1.Start();
             AddButtons();
             BallPB.SetBounds(247, 357, BallPB.Width, BallPB.Height);
-            Rand.Text = $"Blue's turn";
+            Rand.Text = $"Red's turn";
             Rand.TextChanged += new EventHandler(Rand_TextChanged);
             servicii = new Servicii(this, BallPB.Width, BallPB.Height, 20, 20, 58, 56, BallPB);
             servicii.CallTheBorder();
