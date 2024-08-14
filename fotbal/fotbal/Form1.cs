@@ -237,7 +237,7 @@ namespace fotbal
             Restart();
         }
 
-        
+
 
     }
 }

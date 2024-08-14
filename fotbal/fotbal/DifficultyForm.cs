@@ -87,11 +87,11 @@ namespace fotbal
         }
         public void ChangeToHard()
         {
-            //Computer computer = new Computer("hard");
-            //computer.TopLevel = false;
-            //computer.Dock = DockStyle.Fill;
-            //this.Controls.Add(computer);
-            //computer.Show();
+            Computer computer = new Computer("hard");
+            computer.TopLevel = false;
+            computer.Dock = DockStyle.Fill;
+            this.Controls.Add(computer);
+            computer.Show();
         }
         private void Hard_Clicked(object sender, EventArgs e)
         {

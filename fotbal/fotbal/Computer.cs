@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -28,7 +29,7 @@ namespace fotbal
             timer1.Start();
             AddButtons();
             BallPB.SetBounds(247, 357, BallPB.Width, BallPB.Height);
-            Rand.Text = $"Red's Turn";
+            Rand.Text = $"Blue's turn";
             Rand.TextChanged += new EventHandler(Rand_TextChanged);
             servicii = new Servicii(this, BallPB.Width, BallPB.Height, 20, 20, 58, 56, BallPB);
             servicii.CallTheBorder();
@@ -128,7 +129,7 @@ namespace fotbal
                 if (GolLabel.Visible == false && AllBallsCB.Checked == false)
                 {
                     servicii.Mutare();
-                    if(Rand.Text.ToLower()=="red's turn")
+                    if (Rand.Text.ToLower() == "red's turn")
                     {
                         EnableButtons();
                     }
@@ -338,13 +339,13 @@ namespace fotbal
         {
             if (Rand.Text.ToLower() == "blue's turn")
             {
-                DisableButtons();  
+                DisableButtons();
                 botTimer.Start();
             }
             else
             {
                 botTimer.Stop();
-                EnableButtons();  
+                EnableButtons();
             }
         }
 
@@ -362,6 +363,10 @@ namespace fotbal
                 else if (selectedDifficulty == "medium")
                 {
                     MediumBotMove();
+                }
+                else if (selectedDifficulty == "hard")
+                {
+                    BotMoveBFS();
                 }
             }
             else
@@ -501,6 +506,199 @@ namespace fotbal
                 EnableButtons();
             }
         }
+
+
+        // Use tuples for representing coordinates
+        private Dictionary<Point, Point> bfsParents = new Dictionary<Point, Point>();
+        private Dictionary<Point, int> bfsDistances = new Dictionary<Point, int>();
+
+        private IEnumerable<Point> GetNeighbors(Point p)
+        {
+            List<Point> neighbors = new List<Point>();
+
+            // Define movement directions (up, down, left, right)
+            var directions = new (int dx, int dy)[]
+            {
+        (0, -1), // Up
+        (0, 1),  // Down
+        (-1, 0), // Left
+        (1, 0)   // Right
+            };
+
+            foreach (var (dx, dy) in directions)
+            {
+                Point newPoint = new Point(p.X + dx, p.Y + dy);
+                if (IsValidPoint(newPoint))
+                {
+                    neighbors.Add(newPoint);
+                    //MessageBox.Show($"Neighbor found: {newPoint}");
+                }
+            }
+
+            return neighbors;
+        }
+
+
+
+        private bool IsValidPoint(Point p)
+        {
+            // Example validation: ensure the point is within bounds
+            return true;
+        }
+
+
+        private void BotMoveBFS()
+        {
+            Button ballButton = ButtonBehindTheBall();
+            Button goalButton = FindClosestButton(new Point(poartaRed.Location.X, poartaRed.Location.Y+15));
+
+            if (ballButton == null || goalButton == null)
+            {
+                MessageBox.Show("No suitable buttons found for the ball or goal.");
+                return;
+            }
+
+            var ballPosition = new Point(ballButton.Location.X, ballButton.Location.Y - 1); // Adjust if needed
+            var goalPosition = new Point(goalButton.Location.X, goalButton.Location.Y);
+
+            List<Point> path;
+            BFS(ballPosition, goalPosition, out path);
+
+            if (path.Count > 1)
+            {
+                // Process path steps, skipping the initial ball position
+                for (int i = 1; i < path.Count; i++)
+                {
+                    var nextMove = path[i];
+                    Button targetButton = this.Controls.OfType<Button>()
+                                                      .FirstOrDefault(b => new Point(b.Location.X, b.Location.Y) == nextMove);
+
+                    if (targetButton != null)
+                    {
+                        Debug.WriteLine($"Moving to button at {nextMove}");
+                        BTNClick(targetButton, EventArgs.Empty);
+                        // Consider adding a delay to make sure each move is processed
+                        //Task.Delay(1000).Wait(); // Adjust delay as needed
+                    }
+                    else
+                    {
+                       // MessageBox.Show($"Target button not found for the next move. Next move: {nextMove.ToString()}");
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Path is invalid or too short.");
+            }
+        }
+
+
+
+
+        private void BFS(Point start, Point goal, out List<Point> path)
+        {
+            bfsParents.Clear();
+            bfsDistances.Clear();
+
+            Queue<Point> queue = new Queue<Point>();
+            queue.Enqueue(new Point(start.X, start.Y - 1));
+            bfsParents[new Point(start.X,start.Y-1)] = new Point(start.X, start.Y-1);
+            bfsDistances[new Point(start.X, start.Y - 1)] = 0;
+
+            bool found = false;
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                //MessageBox.Show($"Processing point: {current}");
+
+                if (current.Equals(goal))
+                {
+                    found = true;
+                    break; // Goal reached
+                }
+
+                foreach (var neighbor in GetNeighbors(current))
+                {
+                    //MessageBox.Show($"Checking neighbor: {neighbor}");
+
+                    if (!bfsDistances.ContainsKey(neighbor) && IsValidPoint(neighbor))
+                    {
+                        bfsDistances[neighbor] = bfsDistances[current] + 1;
+                        bfsParents[neighbor] = current;
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
+
+            path = new List<Point>();
+
+            if (found)
+            {
+                for (var at = goal; !at.Equals(start); at = bfsParents[at])
+                {
+                    path.Add(at);
+                }
+                path.Add(new Point(start.X, start.Y - 2));
+                path.Reverse();
+                //MessageBox.Show($"Path found: {string.Join(" -> ", path)}");
+            }
+            else
+            {
+                MessageBox.Show("No path found.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+        private Button FindClosestButton(Point point)
+        {
+            Button closestButton = null;
+            double minDistance = double.MaxValue;
+
+            foreach (Control control in this.Controls)
+            {
+                if (control is Button button && (string)control.Tag == "buton")
+                {
+                    var buttonPosition = new Point(button.Location.X + button.Width / 2, button.Location.Y + button.Height / 2);
+                    double distance = Math.Sqrt(Math.Pow(buttonPosition.X - point.X, 2) + Math.Pow(buttonPosition.Y - point.Y, 2));
+
+                    //MessageBox.Show($"Button {button} at {buttonPosition} distance to target: {distance}");
+
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        closestButton = button;
+                    }
+                }
+            }
+
+            return closestButton;
+        }
+
+
+        public Button ButtonBehindTheBall()
+        {
+            foreach (Control control in this.Controls)
+            {
+                if (control is Button button && (string)button.Tag == "buton" && BallPB.Bounds.IntersectsWith(button.Bounds))
+                {
+                    return button;
+                }
+            }
+            return null; // Return null if no button is found
+        }
+
+
+
+
 
     }
 }
