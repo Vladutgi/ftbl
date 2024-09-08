@@ -4,6 +4,9 @@
     <Compile Update="Computer.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="CustomButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="DifficultyForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -134,13 +135,11 @@ namespace fotbal
         {
             foreach (Control pb in form.Controls)
             {
-                if (pb is PictureBox && pb.Tag != null &&(pb.Tag.ToString() == "centruJS" || pb.Tag.ToString() == "CJS"))
+                if (pb is PictureBox && pb.Tag != null && (pb.Tag.ToString() == "centruJS" || pb.Tag.ToString() == "CJS"))
                 {
-                    // Calculate the center point of the PictureBox
                     int pbCenterX = pb.Left + pb.Width / 2;
                     int pbCenterY = pb.Top + pb.Height / 2;
 
-                    // Check if the center point of the button lies between player and PictureBox
                     if (IsPointBetweenJS(pbCenterX, pbCenterY, player.Left, player.Top, button.Right, button.Bottom) == "dreapta")
                     {
                         return "dreapta";
@@ -163,11 +162,9 @@ namespace fotbal
             {
                 if (pb is PictureBox && pb.Tag != null && (pb.Tag.ToString() == "centruSJ" || pb.Tag.ToString() == "CSJ"))
                 {
-                    // Calculate the center point of the PictureBox
                     int pbCenterX = pb.Left + pb.Width / 2;
                     int pbCenterY = pb.Top + pb.Height / 2;
 
-                    // Check if the center point of the button lies between player and PictureBox
                     if (IsPointBetweenSJ(pbCenterX, pbCenterY, player.Left, player.Top, button.Right, button.Bottom) == "dreapta")
                     {
                         return "dreapta";
@@ -192,8 +189,8 @@ namespace fotbal
             {
                 Label linie = new();
                 linie.Height = btnHeight / 2;
-                linie.Width = btnXdistance + btnWidth / 4 ;
-                linie.SetBounds(x + btnWidth / 2 - linie.Height / 2+linie.Height/4 +linie.Height/4 + linie.Height / 8, y + linie.Height / 2, linie.Width, linie.Height);
+                linie.Width = btnXdistance + btnWidth / 4;
+                linie.SetBounds(x + btnWidth / 2 - linie.Height / 2 + linie.Height / 4 + linie.Height / 4 + linie.Height / 8, y + linie.Height / 2, linie.Width, linie.Height);
                 linie.BackColor = Color.Black;
                 linie.Visible = true;
                 linie.Tag = "linieOrizontala";
@@ -203,8 +200,8 @@ namespace fotbal
             {
                 Label linie = new();
                 linie.Height = btnHeight / 2;
-                linie.Width = btnXdistance + btnWidth / 4-linie.Height/4;
-                linie.SetBounds(x + btnWidth / 2 -linie.Height/2 , y + linie.Height / 2, linie.Width, linie.Height);
+                linie.Width = btnXdistance + btnWidth / 4 - linie.Height / 4;
+                linie.SetBounds(x + btnWidth / 2 - linie.Height / 2, y + linie.Height / 2, linie.Width, linie.Height);
                 linie.BackColor = Color.Black;
                 linie.Visible = true;
                 linie.Tag = "linieOrizontala";
@@ -253,19 +250,19 @@ namespace fotbal
             {
                 Label linie = new();
                 linie.Height = btnHeight / 2;
-                linie.Width = btnXdistance + btnWidth / 8*2;
-                linie.SetBounds(x - linie.Width / 2 - btnWidth - linie.Height / 4 *2-linie.Height/8*2+ linie.Height, y + linie.Height / 2, linie.Width, linie.Height);
+                linie.Width = btnXdistance + btnWidth / 8 * 2;
+                linie.SetBounds(x - linie.Width / 2 - btnWidth - linie.Height / 4 * 2 - linie.Height / 8 * 2 + linie.Height, y + linie.Height / 2, linie.Width, linie.Height);
                 linie.BackColor = Color.Black;
                 linie.Visible = true;
                 linie.Tag = "linieOrizontala";
                 form.Controls.Add(linie);
             }
-            else if (x >= 262 && x <= 320 && (y >= 620 || y <= 90 ))
+            else if (x >= 262 && x <= 320 && (y >= 620 || y <= 90))
             {
                 Label linie = new();
                 linie.Height = btnHeight / 2;
-                linie.Width = btnXdistance +btnWidth/8;
-                linie.SetBounds(x - linie.Width / 2 - btnWidth - linie.Height / 4-linie.Height/8  , y + linie.Height / 2, linie.Width, linie.Height);
+                linie.Width = btnXdistance + btnWidth / 8;
+                linie.SetBounds(x - linie.Width / 2 - btnWidth - linie.Height / 4 - linie.Height / 8, y + linie.Height / 2, linie.Width, linie.Height);
                 linie.BackColor = Color.Black;
                 linie.Visible = true;
                 linie.Tag = "linieOrizontala";
@@ -388,14 +385,14 @@ namespace fotbal
         {
             int width = 90;
             int height = 10;
-            int angleDegrees = -44; // Change the angle to rotate from bottom to top
+            int angleDegrees = -44;
 
             double angleRadians = angleDegrees * Math.PI / 180;
             double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
             double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
 
-            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
-            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
+            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2;
+            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2;
 
             Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
 
@@ -415,7 +412,7 @@ namespace fotbal
 
                 Rectangle rect = new Rectangle(0, 0, width, height);
 
-                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
+                using (SolidBrush brush = new SolidBrush(Color.Black))
                 {
                     g.FillRectangle(brush, rect);
                 }
@@ -448,18 +445,18 @@ namespace fotbal
 
 
 
-        public void LinieStangaSus(int x, int y, int a, int b)//
+        public void LinieStangaSus(int x, int y, int a, int b)
         {
             int width = 90;
             int height = 10;
-            int angleDegrees = 44; // Change the angle to rotate from bottom to top
+            int angleDegrees = 44;
 
             double angleRadians = angleDegrees * Math.PI / 180;
             double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
             double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
 
-            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
-            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
+            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2;
+            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2;
 
             Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
 
@@ -479,7 +476,7 @@ namespace fotbal
 
                 Rectangle rect = new Rectangle(0, 0, width, height);
 
-                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
+                using (SolidBrush brush = new SolidBrush(Color.Black))
                 {
                     g.FillRectangle(brush, rect);
                 }
@@ -505,18 +502,18 @@ namespace fotbal
             IsThereALine(a + ballWidth, b + ballHeight);
 
         }
-        public void LinieDreaptaJos(int x, int y, int a, int b)//
+        public void LinieDreaptaJos(int x, int y, int a, int b)
         {
             int width = 90;
             int height = 10;
-            int angleDegrees = 44; // Change the angle to rotate from bottom to top
+            int angleDegrees = 44;
 
             double angleRadians = angleDegrees * Math.PI / 180;
             double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
             double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
 
-            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
-            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
+            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2;
+            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2;
 
             Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
 
@@ -536,7 +533,7 @@ namespace fotbal
 
                 Rectangle rect = new Rectangle(0, 0, width, height);
 
-                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
+                using (SolidBrush brush = new SolidBrush(Color.Black))
                 {
                     g.FillRectangle(brush, rect);
                 }
@@ -566,14 +563,14 @@ namespace fotbal
         {
             int width = 90;
             int height = 10;
-            int angleDegrees = -44; // Change the angle to rotate from bottom to top
+            int angleDegrees = -44;
 
             double angleRadians = angleDegrees * Math.PI / 180;
             double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
             double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
 
-            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
-            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
+            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2;
+            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2;
 
             Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
 
@@ -593,7 +590,7 @@ namespace fotbal
 
                 Rectangle rect = new Rectangle(0, 0, width, height);
 
-                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
+                using (SolidBrush brush = new SolidBrush(Color.Black))
                 {
                     g.FillRectangle(brush, rect);
                 }
@@ -829,319 +826,199 @@ namespace fotbal
 
 
 
-        public void LStangaImaginara(int x, int y, int a, int b)
+        public bool PointSeIntersecteazaVertical(Point player, Point button)
         {
-            
-                Label linie = new();
-                linie.Height = btnHeight / 2;
-                linie.Width = btnXdistance + btnWidth / 4 - linie.Height / 4;
-                linie.SetBounds(x + btnWidth / 2 - linie.Height * 2 / 4, y + linie.Height / 2, linie.Width, linie.Height);
-                linie.BackColor = Color.Black;
-                linie.Visible = true;
-                linie.Tag = "LO";
-                form.Controls.Add(linie);
+            int midX = button.X + 10;
+            int midY = (player.Y + button.Y + 20) / 2;
 
-            IsThereALineImaginara(a + ballWidth, b + ballHeight);
-
-
-        }
-        public void LDreaptaImaginara(int x, int y, int a, int b)
-        {
-            
-                Label linie = new();
-                linie.Height = btnHeight / 2;
-                linie.Width = btnXdistance + btnWidth / 4 - linie.Height / 2;
-                linie.SetBounds(x - linie.Width / 2 - btnWidth - linie.Height / 8, y + linie.Height / 2, linie.Width, linie.Height);
-                linie.BackColor = Color.Black;
-                linie.Visible = true;
-                linie.Tag = "LO";
-                form.Controls.Add(linie);
-
-            IsThereALineImaginara(a + ballWidth, b + ballHeight);
-
-        }
-        public void LSusImaginara(int x, int y, int a, int b)
-        {
-            
-                Label linie = new();
-                linie.Width = btnHeight / 2;
-                linie.Height = btnYdistance + btnHeight / 4 - linie.Width / 2 + linie.Width / 8;
-                linie.SetBounds(x + linie.Width / 2, y + btnHeight / 2 - linie.Width / 2, linie.Width, linie.Height);
-                linie.BackColor = Color.Black;
-                linie.Visible = true;
-                linie.Tag = "LV";
-                form.Controls.Add(linie);
-
-            IsThereALineImaginara(a + ballWidth, b + ballHeight);
-
-        }
-        public void LJosImaginara(int x, int y, int a, int b)
-        {
-          
-                Label linie = new();
-                linie.Width = btnHeight / 2;
-                linie.Height = btnYdistance + btnHeight / 4 - linie.Width / 2 + linie.Width / 8;
-                linie.SetBounds(x + linie.Width / 2, y - linie.Height + btnHeight / 2 - linie.Width / 2 + linie.Width / 8, linie.Width, linie.Height);
-                linie.BackColor = Color.Black;
-                linie.Visible = true;
-                linie.Tag = "LV";
-                form.Controls.Add(linie);
-
-            IsThereALineImaginara(a + ballWidth, b + ballHeight);
-
-
-        }
-        public void LStangaJosImaginara(int x, int y, int a, int b)
-        {
-            int width = 90;
-            int height = 10;
-            int angleDegrees = -44; // Change the angle to rotate from bottom to top
-
-            double angleRadians = angleDegrees * Math.PI / 180;
-            double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
-            double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
-
-            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
-            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
-
-            Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
-
-            using (Graphics g = Graphics.FromImage(bmp))
+            foreach (Control label in form.Controls)
             {
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-
-                g.Clear(Color.Transparent);
-
-                g.TranslateTransform((float)bmpWidth / 2, (float)bmpHeight / 2);
-
-                g.RotateTransform((float)angleDegrees);
-
-                g.TranslateTransform(-(float)width / 2, -(float)height / 2);
-
-                Rectangle rect = new Rectangle(0, 0, width, height);
-
-                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
+                if (label is Label && ((string)label.Tag == "linieVerticala" || (string)label.Tag == "LV"))
                 {
-                    g.FillRectangle(brush, rect);
-                }
-
-
-            }
-
-            bmp.MakeTransparent(Color.Transparent);
-
-            Rectangle targetRect = new Rectangle((x + a) / 2 - bmp.Width / 2 + btnWidth / 4, (y + b) / 2 - bmp.Height / 2 + btnHeight, bmp.Width, bmp.Height);
-            using (Graphics g = form.CreateGraphics())
-            {
-                g.DrawImage(bmp, targetRect);
-            }
-
-            bmp.Dispose();
-            PictureBox pictureBox = new PictureBox();
-            pictureBox.BackColor = Color.Blue;
-            pictureBox.Size = new Size(10, 10);
-            pictureBox.Location = new Point((x + a) / 2 + btnWidth / 4, (y + b) / 2 + btnHeight / 2);
-            pictureBox.Tag = "CJS";
-            pictureBox.Visible = false;
-
-            form.Controls.Add(pictureBox);
-            IsThereALineImaginara(a + ballWidth, b + ballHeight);
-
-        }
-
-
-
-
-
-        public void LStangaSusImaginara(int x, int y, int a, int b)//
-        {
-            int width = 90;
-            int height = 10;
-            int angleDegrees = 44; // Change the angle to rotate from bottom to top
-
-            double angleRadians = angleDegrees * Math.PI / 180;
-            double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
-            double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
-
-            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
-            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
-
-            Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
-
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-
-                g.Clear(Color.Transparent);
-
-                g.TranslateTransform((float)bmpWidth / 2, (float)bmpHeight / 2);
-
-                g.RotateTransform((float)angleDegrees);
-
-                g.TranslateTransform(-(float)width / 2, -(float)height / 2);
-
-                Rectangle rect = new Rectangle(0, 0, width, height);
-
-                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
-                {
-                    g.FillRectangle(brush, rect);
+                    if (label.Bounds.Contains(midX, midY))
+                    {
+                        return true;
+                    }
                 }
             }
 
-            bmp.MakeTransparent(Color.Transparent);
-
-            Rectangle targetRect = new Rectangle((x + a) / 2 - bmp.Width / 2 + btnWidth, (y + b) / 2 - bmp.Height / 2 + btnHeight, bmp.Width, bmp.Height);
-            using (Graphics g = form.CreateGraphics())
-            {
-                g.DrawImage(bmp, targetRect);
-            }
-
-            bmp.Dispose();
-            PictureBox pictureBox = new PictureBox();
-            pictureBox.BackColor = Color.Blue;
-            pictureBox.Size = new Size(10, 10);
-            pictureBox.Location = new Point((x + a) / 2 + btnWidth / 4, (y + b) / 2 + btnHeight / 2);
-            pictureBox.Tag = "CSJ";
-            pictureBox.Visible = false;
-
-            form.Controls.Add(pictureBox);
-            IsThereALineImaginara(a + ballWidth, b + ballHeight);
-
+            return false;
         }
-        public void LDreaptaJosImaginara(int x, int y, int a, int b)//
+
+        public bool PointSeIntersecteazaOrizontal(Point player, Point buttonLocation)
         {
-            int width = 90;
-            int height = 10;
-            int angleDegrees = 44; // Change the angle to rotate from bottom to top
+            int midX = (player.X + 20 + buttonLocation.X) / 2;
+            int midY = (player.Y + buttonLocation.Y + 20) / 2;
 
-            double angleRadians = angleDegrees * Math.PI / 180;
-            double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
-            double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
-
-            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
-            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
-
-            Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
-
-            using (Graphics g = Graphics.FromImage(bmp))
+            foreach (Control label in form.Controls)
             {
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-
-                g.Clear(Color.Transparent);
-
-                g.TranslateTransform((float)bmpWidth / 2, (float)bmpHeight / 2);
-
-                g.RotateTransform((float)angleDegrees);
-
-                g.TranslateTransform(-(float)width / 2, -(float)height / 2);
-
-                Rectangle rect = new Rectangle(0, 0, width, height);
-
-                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
+                if (label is Label && ((string)label.Tag == "linieOrizontala" || (string)label.Tag == "LO"))
                 {
-                    g.FillRectangle(brush, rect);
+                    if (label.Bounds.Contains(midX, midY))
+                    {
+                        return true;
+                    }
                 }
             }
 
-            bmp.MakeTransparent(Color.Transparent);
-
-            Rectangle targetRect = new Rectangle((x + a) / 2 - bmp.Width / 2 + btnWidth, (y + b) / 2 - bmp.Height / 2 + btnHeight, bmp.Width, bmp.Height);
-            using (Graphics g = form.CreateGraphics())
-            {
-                g.DrawImage(bmp, targetRect);
-            }
-
-            bmp.Dispose();
-            PictureBox pictureBox = new PictureBox();
-            pictureBox.BackColor = Color.Blue;
-            pictureBox.Size = new Size(10, 10);
-            pictureBox.Location = new Point((x + a) / 2 + btnWidth / 4, (y + b) / 2 + btnHeight / 2);
-            pictureBox.Tag = "CSJ";
-            pictureBox.Visible = false;
-
-            form.Controls.Add(pictureBox);
-            IsThereALineImaginara(a + ballWidth, b + ballHeight);
-
+            return false;
         }
-        public void LDreaptaSusImaginara(int x, int y, int a, int b)//
+
+
+
+        public string PointSeIntersecteazaOblicJSDreapta(Control player, Button button)
         {
-            int width = 90;
-            int height = 10;
-            int angleDegrees = -44; // Change the angle to rotate from bottom to top
-
-            double angleRadians = angleDegrees * Math.PI / 180;
-            double rotatedWidth = Math.Abs(width * Math.Cos(angleRadians)) + Math.Abs(height * Math.Sin(angleRadians));
-            double rotatedHeight = Math.Abs(width * Math.Sin(angleRadians)) + Math.Abs(height * Math.Cos(angleRadians));
-
-            int bmpWidth = (int)Math.Ceiling(rotatedWidth) * 2; // Adjust resolution as needed
-            int bmpHeight = (int)Math.Ceiling(rotatedHeight) * 2; // Adjust resolution as needed
-
-            Bitmap bmp = new Bitmap(bmpWidth, bmpHeight);
-
-            using (Graphics g = Graphics.FromImage(bmp))
+            foreach (Control pb in form.Controls)
             {
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-
-                g.Clear(Color.Transparent);
-
-                g.TranslateTransform((float)bmpWidth / 2, (float)bmpHeight / 2);
-
-                g.RotateTransform((float)angleDegrees);
-
-                g.TranslateTransform(-(float)width / 2, -(float)height / 2);
-
-                Rectangle rect = new Rectangle(0, 0, width, height);
-
-                using (SolidBrush brush = new SolidBrush(Color.Black)) // Change the color as needed
+                if (pb is PictureBox && pb.Tag != null && (pb.Tag.ToString() == "centruJS" || pb.Tag.ToString() == "CJS"))
                 {
-                    g.FillRectangle(brush, rect);
+                    int pbCenterX = pb.Left + pb.Width / 2;
+                    int pbCenterY = pb.Top + pb.Height / 2;
+
+                    if (IsPointBetweenJSPoint(pbCenterX, pbCenterY, player.Left, player.Top, button.Right, button.Bottom) == "dreapta")
+                    {
+                        return "true";
+                    }
                 }
             }
 
-            bmp.MakeTransparent(Color.Transparent);
-
-            Rectangle targetRect = new Rectangle((x + a) / 2 - bmp.Width / 2 + btnWidth / 4, (y + b) / 2 - bmp.Height / 2 + btnHeight, bmp.Width, bmp.Height);
-            using (Graphics g = form.CreateGraphics())
+            return "false";
+        }
+        public string PointSeIntersecteazaOblicJSStanga(Control player, Button button)
+        {
+            foreach (Control pb in form.Controls)
             {
-                g.DrawImage(bmp, targetRect);
+                if (pb is PictureBox && pb.Tag != null && (pb.Tag.ToString() == "centruJS" || pb.Tag.ToString() == "CJS"))
+                {
+                    int pbCenterX = pb.Left + pb.Width / 2;
+                    int pbCenterY = pb.Top + pb.Height / 2;
+
+                    if (IsPointBetweenJSPoint(pbCenterX, pbCenterY, player.Left, player.Top, button.Right, button.Bottom) == "stanga")
+                    {
+                        return "true";
+                    }
+                }
             }
 
-            bmp.Dispose();
-            PictureBox pictureBox = new PictureBox();
-            pictureBox.BackColor = Color.Blue;
-            pictureBox.Size = new Size(10, 10);
-            pictureBox.Location = new Point((x + a) / 2 + btnWidth / 4, (y + b) / 2 + btnHeight / 2);
-            pictureBox.Tag = "CJS";
-            pictureBox.Visible = false;
-            form.Controls.Add(pictureBox);
-
-            IsThereALineImaginara(a + ballWidth, b + ballHeight);
+            return "false";
         }
 
-
-        public void IsThereALineImaginara(int x, int y)
+        /// 
+        /// 
+        /// 
+        /// 
+        /// 
+        /// 
+        public string PointSeIntersecteazaOblicSJDreapta(Control player, Button button)
         {
-            PictureBox pictureBox = new PictureBox();
-            pictureBox.SetBounds(x - ballWidth / 2 - 5, y - ballHeight / 2 - 5, 10, 10);
-            pictureBox.BackColor = Color.Magenta;
-            pictureBox.Tag = "intersectieImaginara";
-            pictureBox.Visible = false;
-            form.Controls.Add(pictureBox);
-            pictureBox.BringToFront();
+            foreach (Control pb in form.Controls)
+            {
+                if (pb is PictureBox && pb.Tag != null && (pb.Tag.ToString() == "centruSJ" || pb.Tag.ToString() == "CSJ"))
+                {
+                    int pbCenterX = pb.Left + pb.Width / 2;
+                    int pbCenterY = pb.Top + pb.Height / 2;
+
+                    if (IsPointBetweenSJPoint(pbCenterX, pbCenterY, player.Left, player.Top, button.Right, button.Bottom) == "dreapta")
+                    {
+                        return "true";
+                    }
+
+                }
+            }
+
+            return "false";
+        }
+
+        public string PointSeIntersecteazaOblicSJStanga(Control player, Button button)
+        {
+            foreach (Control pb in form.Controls)
+            {
+                if (pb is PictureBox && pb.Tag != null && (pb.Tag.ToString() == "centruSJ" || pb.Tag.ToString() == "CSJ"))
+                {
+                    int pbCenterX = pb.Left + pb.Width / 2;
+                    int pbCenterY = pb.Top + pb.Height / 2;
+
+                    if (IsPointBetweenSJPoint(pbCenterX, pbCenterY, player.Left, player.Top, button.Right, button.Bottom) == "stanga")
+                    {
+                        return "true";
+                    }
+
+                }
+            }
+
+            return "false";
+        }
+
+        public string IsPointBetweenSJPoint(int x, int y, int x1, int y1, int x2, int y2)
+        {
+            if (x > x1 + 35 && x < x2 - 20 && y > y1 + 35 && y < y2 - 20) { return "dreapta"; }
+            else if (x > x2 + 5 && x < x1 - 5 && y > y2 + 20 && y < y - 5) { return "stanga"; }
+            else { return "false"; }
+        }
+        public string IsPointBetweenJSPoint(int x, int y, int x1, int y1, int x2, int y2)
+        {
+            if (x > x1 + 35 && x < x2 - 20 && y > y2 && y < y1) { return "dreapta"; }
+            else if (x < x1 - 5 && x > x2 + 5 && y > y1 + 20 && y < y2 - 20) { return "stanga"; }
+            else { return "false"; }
         }
 
 
 
+        public List<String> Intersections(Control player, Button button)
+        {
+
+            List<String> listOfIntersections = new List<String>();
+            foreach (Control control in form.Controls)
+            {
+                if (control is PictureBox || control is Label)
+                {
+                    if (control.Left > player.Left - 80 && control.Right > player.Right + 80 && control.Top > player.Top - 80 && control.Bottom > player.Bottom + 80)
+                    {
+                        int midX = player.Location.X + button.Location.X;
+                        int midY = player.Location.Y + button.Location.Y;
+
+                        listOfIntersections.Add(ReturnIntersectionControl(new Point(midX, midY)).Name);
 
 
+
+
+                    }
+
+                }
+
+            }
+
+
+            return listOfIntersections;
+        }
+
+        private Control ReturnIntersectionControl(Point p)
+        {
+            Control closestControl = null;
+            double minDistance = double.MaxValue;
+
+            foreach (Control control in form.Controls)
+            {
+                if ((control is Label label || control is PictureBox pictureBox) && control != null)
+                {
+                    if (control.Tag!=null&&(string)control.Tag == "linieOrizontala" || (string)control.Tag == "linieVerticala" || (string)control.Tag == "centruJS" || (string)control.Tag == "centruSJ")
+                    {
+                        var controlPosition = new Point(control.Location.X + control.Width / 2, control.Location.Y + control.Height / 2);
+                        double distance = Math.Sqrt(Math.Pow(controlPosition.X - p.X, 2) + Math.Pow(controlPosition.Y - p.Y, 2));
+
+                        if (distance < minDistance)
+                        {
+                            minDistance = distance;
+                            closestControl = control;
+                        }
+
+                    }
+
+                }
+            }
+
+            return closestControl;
+        }
 
     }
 

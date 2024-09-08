@@ -17,7 +17,6 @@ namespace fotbal
         Servicii servicii;
         private bool available = true;
         private bool intersects = false;
-        private int btnCounter = 0;
         private System.Windows.Forms.Timer botTimer;
         Random random = new Random();
         private string selectedDifficulty = String.Empty;
@@ -27,7 +26,8 @@ namespace fotbal
             InitializeComponent();
             this.DoubleBuffered = true;
             timer1.Start();
-            AddButtons();
+            //AddButtons();
+            DrawCustomButton();
             BallPB.SetBounds(247, 357, BallPB.Width, BallPB.Height);
             Rand.Text = $"Red's turn";
             Rand.TextChanged += new EventHandler(Rand_TextChanged);
@@ -41,50 +41,7 @@ namespace fotbal
             AllBallsCB.CheckedChanged += SchimbaVizibilitatea;
         }
 
-        private void AddButtons()
-        {
-            // Coordinates as provided
-            int[,] coordinates = new int[,]
-            {
-            {310, 26}, {252, 26}, {194, 26},
-            {310, 698}, {252, 698}, {194, 698},
-            {310, 642}, {484, 642}, {426, 642}, {368, 642}, {252, 642}, {194, 642}, {136, 642}, {78, 642},
-            {310, 586}, {484, 586}, {426, 586}, {368, 586}, {252, 586}, {194, 586}, {136, 586}, {78, 586},
-            {310, 530}, {484, 530}, {426, 530}, {368, 530}, {252, 530}, {194, 530}, {136, 530}, {78, 530},
-            {310, 474}, {484, 474}, {426, 474}, {368, 474}, {252, 474}, {194, 474}, {136, 474}, {78, 474},
-            {310, 418}, {484, 418}, {426, 418}, {368, 418}, {252, 418}, {194, 418}, {136, 418}, {78, 418}, {20, 418},
-            {20, 474}, {20, 530}, {20, 586}, {20, 642},
-            {310, 82}, {484, 82}, {426, 82}, {368, 82}, {252, 82}, {194, 82}, {136, 82}, {78, 82},
-            {310, 138}, {484, 138}, {426, 138}, {368, 138}, {252, 138}, {194, 138}, {136, 138}, {78, 138},
-            {310, 194}, {484, 194}, {426, 194}, {368, 194}, {252, 194}, {194, 194}, {136, 194}, {78, 194},
-            {310, 250}, {484, 250}, {426, 250}, {368, 250}, {252, 250}, {194, 250}, {136, 250}, {78, 250}, {20, 82},
-            {20, 138}, {20, 194}, {20, 250},
-            {310, 306}, {484, 306}, {426, 306}, {368, 306}, {252, 306}, {194, 306}, {136, 306}, {78, 306}, {20, 306},
-            {310, 362}, {484, 362}, {426, 362}, {368, 362}, {252, 362}, {194, 362}, {136, 362}, {78, 362}, {20, 362}
-            };
 
-            for (int i = 0; i < coordinates.GetLength(0); i++)
-            {
-                Button button = new Button();
-                button.Size = new Size(20, 20);
-                button.Left = coordinates[i, 0];
-                button.Top = coordinates[i, 1];
-                button.Tag = "buton";
-                button.Click += new EventHandler(BTNClick);
-                this.Controls.Add(button);
-            }
-            Button restartBTN = new Button();
-            restartBTN.Size = new Size(96, 28);
-            restartBTN.Left = 384;
-            restartBTN.Top = 677;
-            restartBTN.BackColor = Color.Green;
-            restartBTN.Text = "Restart";
-            restartBTN.FlatStyle = FlatStyle.Popup;
-            restartBTN.Click += new EventHandler(Restart_btn_Click);
-
-
-            this.Controls.Add(restartBTN);
-        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -103,7 +60,7 @@ namespace fotbal
                 AllBallsCB.Visible = false;
                 foreach (Control Btn in this.Controls)
                 {
-                    if (Btn is Button && (String)Btn.Tag == "buton")
+                    if (Btn is CustomButton && (String)Btn.Tag == "buton")
                     {
                         Btn.Visible = false;
                     }
@@ -117,7 +74,7 @@ namespace fotbal
                 servicii.ToateButoanele();
                 foreach (Control Btn in this.Controls)
                 {
-                    if (Btn is Button && (String)Btn.Tag == "buton")
+                    if (Btn is CustomButton && (String)Btn.Tag == "buton")
                     {
                         Btn.BackColor = Color.Green;
                         Btn.Enabled = false;
@@ -128,7 +85,8 @@ namespace fotbal
             {
                 if (GolLabel.Visible == false && AllBallsCB.Checked == false)
                 {
-                    servicii.Mutare();
+                    ShowTheButtons();
+                    //servicii.Mutare();
                     if (Rand.Text.ToLower() == "red's turn")
                     {
                         EnableButtons();
@@ -139,376 +97,391 @@ namespace fotbal
             if (timer1.Enabled == true && AllBallsCB.Checked == false && GolLabel.Visible == false)
             {
                 available = false;
-                foreach (Control Btn in this.Controls)
-                {
-                    if (Btn is Button && (String)Btn.Tag == "buton")
+
+
+                
+                    if (DirectionsAvailable(ButtonBehindThePlayer()) == false)
                     {
-                        if (Btn.Visible)
+                        available = false;                           // MessageBox.Show("Test");
+
+                    }
+                    else
+                    {
+
+                        ///MessageBox.Show("Testeeeeeeeee");
+                        available = true;
+                    }
+
+
+                    if (available == false)
+                    {
+                        //Turn();
+                        if (Rand.Text.ToLower() == "red's turn")
                         {
-                            available = true;
+                            GolLabel.Text = "Blue Won";
+                            GolLabel.BackColor = Color.Blue;
+                        }
+                        else
+                        {
+                            GolLabel.Text = "Red Won";
+                            GolLabel.BackColor = Color.Red;
+                        }
+                        Rand.Visible = false;
+                        GolLabel.ForeColor = Color.White;
+                        GolLabel.Visible = true;
+                        timer1.Stop();
+                        botTimer.Stop();
+                    }
+                }
+
+            }
+            public void Restart()
+            {
+                List<Control> deSters = new List<Control>();
+                foreach (Control label in this.Controls)
+                {
+                    if (label is Label && (string)label.Tag == "linieOrizontala")
+                    {
+                        deSters.Add(label);
+                    }
+                    if (label is Label && (string)label.Tag == "linieVerticala")
+                    {
+                        deSters.Add(label);
+                    }
+                    if (label is PictureBox && (string)label.Tag == "centruJS")
+                    {
+                        deSters.Add(label);
+                    }
+                    if (label is PictureBox && (string)label.Tag == "centruSJ")
+                    {
+                        deSters.Add(label);
+                    }
+                    if (label is CustomButton && (string)label.Tag == "buton")
+                    {
+                        deSters.Add(label);
+                    }
+                    this.Invalidate();
+                }
+                foreach (Control desters in deSters)
+                {
+                    this.Controls.Remove(desters);
+                    desters.Dispose();
+                }
+                DrawCustomButton();
+                AllBallsCB.Visible = true;
+                GolLabel.BackColor = Color.Transparent;
+                GolLabel.Text = "GOOOOOOOOOOOOL!";
+                Rand.Visible = true;
+                BallPB.SetBounds(252 - 20 / 4, 362 - 20 / 4, BallPB.Width, BallPB.Height);
+                timer1.Start();
+                Rand.Text = "Red's Turn";
+            }
+
+            private void Restart_btn_Click(object sender, EventArgs e)
+            {
+                timer1.Stop();
+                GolLabel.Visible = false;
+                Restart();
+            }
+            private void BTNClick(object sender, EventArgs e)
+            {
+                CustomButton cb = (CustomButton)sender;
+                int x, y;
+                x = cb.Location.X;
+                y = cb.Location.Y;
+                int a, b;
+                a = BallPB.Location.X;
+                b = BallPB.Location.Y;
+
+                BallPB.SetBounds(cb.Location.X - 20 / 4, cb.Location.Y - 20 / 4, BallPB.Width, BallPB.Height);
+                intersects = false;
+
+                foreach (Control pb in this.Controls)
+                {
+                    if (pb is PictureBox && (string)pb.Tag == "intersectie")
+                    {
+                        if (pb.Bounds.IntersectsWith(BallPB.Bounds))
+                        {
+                            intersects = true;
                             break;
                         }
                     }
                 }
-                if (available == false)
+                if (x < a - 20 / 4 && y - 20 / 4 == b)
                 {
-                    //Turn();
-                    if (Rand.Text.ToLower() == "red's turn")
+                    //stanga
+                    servicii.LinieStanga(x, y, a, b);
+                    if (!intersects) { servicii.Turn(Rand); }
+                }
+                else if (y == b + 20 / 4 && x > a + 20 / 4)
+                {
+                    //dreapta
+                    servicii.LinieDreapta(x, y, a, b);
+                    if (!intersects) { servicii.Turn(Rand); }
+                }
+                else if (y - 20 / 4 > b && x == a + 20 / 4)
+                {
+                    //jos
+                    servicii.LinieJos(x, y, a, b);
+                    if (!intersects) { servicii.Turn(Rand); }
+                }
+                else if (y - 20 / 4 < b && x - 20 / 4 == a)
+                {
+                    //sus
+                    servicii.LinieSus(x, y, a, b);
+                    if (!intersects) { servicii.Turn(Rand); }
+                }
+                else if (x - 20 / 4 > a && y < b + 20 / 4)
+                {
+                    //dreapta sus
+                    servicii.LinieDreaptaSus(x, y, a, b);
+                    if (!intersects) { servicii.Turn(Rand); }
+                }
+                else if (x - 20 / 4 > a && y > b + 20 / 4)
+                {
+                    //dreapta jos
+                    servicii.LinieDreaptaJos(x, y, a, b);
+                    if (!intersects) { servicii.Turn(Rand); }
+                }
+                else if (x - 20 / 4 < a && y < b + 20 / 4)
+                {
+                    //stanga sus
+                    servicii.LinieStangaSus(x, y, a, b);
+                    if (!intersects) { servicii.Turn(Rand); }
+                }
+                else if (x - 20 / 4 < a && y > b + 20 / 4)
+                {
+                    //stanga jos
+                    servicii.LinieStangaJos(x, y, a, b);
+                    if (!intersects) { servicii.Turn(Rand); }
+                }
+                foreach (String item in servicii.Intersections(BallPB, cb))
+                {
+                    if (item != String.Empty)
                     {
-                        GolLabel.Text = "Blue Won";
-                        GolLabel.BackColor = Color.Blue;
+                        MessageBox.Show(item.ToString());
+
                     }
-                    else
+                }
+
+            }
+            private void BotMove()
+            {
+
+                List<CustomButton> closestBTNs = new List<CustomButton>();
+                double distantaMinima = double.MaxValue;
+                int goalX = poartaRed.Location.X;
+                int goalY = poartaRed.Location.Y;
+                int ballXLocation = BallPB.Location.X;
+                int ballYLocation = BallPB.Location.Y;
+
+
+
+                foreach (Control control in this.Controls)
+                {
+                    if (control is CustomButton button && (string)control.Tag == "buton" && control.Visible == true)
                     {
-                        GolLabel.Text = "Red Won";
-                        GolLabel.BackColor = Color.Red;
+                        int btnXLocation = button.Location.X;
+                        int btnYLocation = button.Location.Y;
+
+                        double distanta = Math.Sqrt(Math.Pow(btnXLocation - goalX, 2) + Math.Pow(btnYLocation - goalY, 2));
+
+                        if (distanta < distantaMinima)
+                        {
+                            distantaMinima = distanta;
+                            closestBTNs.Clear();
+                            closestBTNs.Add(button);
+                        }
+                        else if (distanta == distantaMinima)
+                        {
+                            closestBTNs.Add(button);
+                        }
                     }
-                    Rand.Visible = false;
-                    GolLabel.ForeColor = Color.White;
-                    GolLabel.Visible = true;
-                    timer1.Stop();
+                }
+                if (closestBTNs.Count > 0)
+                {
+                    CustomButton selectedButton = closestBTNs[random.Next(closestBTNs.Count)];
+                    CustomBTNClick(selectedButton, EventArgs.Empty);
+                }
+            }
+
+            private void Rand_TextChanged(object sender, EventArgs e)
+            {
+                if (Rand.Text.ToLower() == "blue's turn")
+                {
+                    DisableButtons();
+                    botTimer.Start();
+                }
+                else
+                {
+                    botTimer.Stop();
+                    EnableButtons();
+                }
+            }
+
+
+            private void BotTimer_Tick(object sender, EventArgs e)
+            {
+                if (Rand.Text.ToLower() == "blue's turn")
+                {
+
+                    if (selectedDifficulty == "easy")
+                    {
+                        BotMove();
+
+                    }
+                    else if (selectedDifficulty == "medium")
+                    {
+                        MediumBotMove();
+
+                    }
+                    else if (selectedDifficulty == "hard")
+                    {
+                        BotMoveBFS();
+                    }
+                }
+                else
+                {
                     botTimer.Stop();
                 }
             }
-        }
-        public void Restart()
-        {
-            List<Control> deSters = new List<Control>();
-            foreach (Control label in this.Controls)
+
+            private void MediumBotMove()
             {
-                if (label is Label && (string)label.Tag == "linieOrizontala")
-                {
-                    deSters.Add(label);
-                }
-                if (label is Label && (string)label.Tag == "linieVerticala")
-                {
-                    deSters.Add(label);
-                }
-                if (label is PictureBox && (string)label.Tag == "centruJS")
-                {
-                    deSters.Add(label);
-                }
-                if (label is PictureBox && (string)label.Tag == "centruSJ")
-                {
-                    deSters.Add(label);
-                }
-                if (label is PictureBox && (string)label.Tag == "intersectie")
-                {
-                    deSters.Add(label);
-                }
-                this.Invalidate();
-            }
-            foreach (Control desters in deSters)
-            {
-                this.Controls.Remove(desters);
-                desters.Dispose();
-            }
-            servicii.CallTheBorder();
-            AllBallsCB.Visible = true;
-            GolLabel.BackColor = Color.Transparent;
-            GolLabel.Text = "GOOOOOOOOOOOOL!";
-            Rand.Visible = true;
-            BallPB.SetBounds(252 - 20 / 4, 362 - 20 / 4, BallPB.Width, BallPB.Height);
-            timer1.Start();
-            Rand.Text = "Red's Turn";
-        }
 
-        private void Restart_btn_Click(object sender, EventArgs e)
-        {
-            timer1.Stop();
-            GolLabel.Visible = false;
-            Restart();
-        }
-        private void BTNClick(object sender, EventArgs e)
-        {
+                List<Button> bestMoves = new List<Button>();
+                double bestScore = double.MinValue;
 
-            Button cb = (Button)sender;
-            int x, y;
-            x = cb.Location.X;
-            y = cb.Location.Y;
-            int a, b;
-            a = BallPB.Location.X;
-            b = BallPB.Location.Y;
+                int goalX = poartaRed.Location.X;
+                int goalY = poartaRed.Location.Y;
 
-            BallPB.SetBounds(cb.Location.X - 20 / 4, cb.Location.Y - 20 / 4, BallPB.Width, BallPB.Height);
-            intersects = false;
-
-            foreach (Control pb in this.Controls)
-            {
-                if (pb is PictureBox && (string)pb.Tag == "intersectie")
+                foreach (Control control in this.Controls)
                 {
-                    if (pb.Bounds.IntersectsWith(BallPB.Bounds))
+                    if (control is Button button && control.Tag == "buton" && control.Visible)
                     {
-                        intersects = true;
-                        break;
+                        int btnX = button.Location.X;
+                        int btnY = button.Location.Y;
+                        double distanceToGoal = Math.Sqrt(Math.Pow(btnX - goalX, 2) + Math.Pow(btnY - goalY, 2));
+                        bool isBlockingMove = IsBlockingMove(button);
+                        bool isScoringMove = IsScoringMove(button);
+                        double score = EvaluateScore(distanceToGoal, isBlockingMove, isScoringMove);
+
+                        if (score > bestScore)
+                        {
+                            bestScore = score;
+                            bestMoves.Clear();
+                            bestMoves.Add(button);
+                        }
+                        else if (score == bestScore)
+                        {
+                            bestMoves.Add(button);
+                        }
                     }
                 }
-            }
-            if (x < a - 20 / 4 && y - 20 / 4 == b)
-            {
-                //stanga
-                servicii.LinieStanga(x, y, a, b);
-                if (!intersects) { servicii.Turn(Rand); }
-            }
-            else if (y == b + 20 / 4 && x > a + 20 / 4)
-            {
-                //dreapta
-                servicii.LinieDreapta(x, y, a, b);
-                if (!intersects) { servicii.Turn(Rand); }
-            }
-            else if (y - 20 / 4 > b && x == a + 20 / 4)
-            {
-                //jos
-                servicii.LinieJos(x, y, a, b);
-                if (!intersects) { servicii.Turn(Rand); }
-            }
-            else if (y - 20 / 4 < b && x - 20 / 4 == a)
-            {
-                //sus
-                servicii.LinieSus(x, y, a, b);
-                if (!intersects) { servicii.Turn(Rand); }
-            }
-            else if (x - 20 / 4 > a && y < b + 20 / 4)
-            {
-                //dreapta sus
-                servicii.LinieDreaptaSus(x, y, a, b);
-                if (!intersects) { servicii.Turn(Rand); }
-            }
-            else if (x - 20 / 4 > a && y > b + 20 / 4)
-            {
-                //dreapta jos
-                servicii.LinieDreaptaJos(x, y, a, b);
-                if (!intersects) { servicii.Turn(Rand); }
-            }
-            else if (x - 20 / 4 < a && y < b + 20 / 4)
-            {
-                //stanga sus
-                servicii.LinieStangaSus(x, y, a, b);
-                if (!intersects) { servicii.Turn(Rand); }
-            }
-            else if (x - 20 / 4 < a && y > b + 20 / 4)
-            {
-                //stanga jos
-                servicii.LinieStangaJos(x, y, a, b);
-                if (!intersects) { servicii.Turn(Rand); }
-            }
 
-
-        }
-        private void BotMove()
-        {
-
-            List<Button> closestBTNs = new List<Button>();
-            double distantaMinima = double.MaxValue;
-            int goalX = poartaRed.Location.X;
-            int goalY = poartaRed.Location.Y;
-            int ballXLocation = BallPB.Location.X;
-            int ballYLocation = BallPB.Location.Y;
-
-
-
-            foreach (Control control in this.Controls)
-            {
-                if (control is Button button && (string)control.Tag == "buton" && control.Visible == true)
+                if (bestMoves.Count > 0)
                 {
-                    int btnXLocation = button.Location.X;
-                    int btnYLocation = button.Location.Y;
+                    Button selectedButton = bestMoves[random.Next(bestMoves.Count)];
+                    BTNClick(selectedButton, EventArgs.Empty);
+                }
+            }
 
-                    double distanta = Math.Sqrt(Math.Pow(btnXLocation - goalX, 2) + Math.Pow(btnYLocation - goalY, 2));
-
-                    if (distanta < distantaMinima)
+            private bool IsBlockingMove(Button button)
+            {
+                foreach (Control control in this.Controls)
+                {
+                    if (control is PictureBox && control.Bounds.IntersectsWith(button.Bounds))
                     {
-                        distantaMinima = distanta;
-                        closestBTNs.Clear();
-                        closestBTNs.Add(button);
-                    }
-                    else if (distanta == distantaMinima)
-                    {
-                        closestBTNs.Add(button);
+                        return true;
                     }
                 }
+                return false;
             }
-            if (closestBTNs.Count > 0)
-            {
-                Button selectedButton = closestBTNs[random.Next(closestBTNs.Count)];
-                BTNClick(selectedButton, EventArgs.Empty);
-            }
-        }
 
-        private void Rand_TextChanged(object sender, EventArgs e)
-        {
-            if (Rand.Text.ToLower() == "blue's turn")
+            private bool IsScoringMove(Button button)
             {
-                DisableButtons();
-                botTimer.Start();
-            }
-            else
-            {
-                botTimer.Stop();
-                EnableButtons();
-            }
-        }
+                int btnX = button.Location.X;
+                int btnY = button.Location.Y;
+                int goalX = poartaRed.Location.X;
+                int goalY = poartaRed.Location.Y;
+                int ballX = BallPB.Location.X;
+                int ballY = BallPB.Location.Y;
 
+                double currentDistance = Math.Sqrt(Math.Pow(ballX - goalX, 2) + Math.Pow(ballY - goalY, 2));
+                double newDistance = Math.Sqrt(Math.Pow(btnX - goalX, 2) + Math.Pow(btnY - goalY, 2));
 
-        private void BotTimer_Tick(object sender, EventArgs e)
-        {
-            if (Rand.Text.ToLower() == "blue's turn")
+                return newDistance < currentDistance;
+            }
+
+            private double EvaluateScore(double distanceToGoal, bool isBlockingMove, bool isScoringMove)
             {
 
-                if (selectedDifficulty == "easy")
+                double distanceWeight = 1.0;
+                double blockingMoveWeight = 0.5;
+                double scoringMoveWeight = 0.7;
+                double score = distanceWeight * (1.0 / (distanceToGoal + 1));
+
+                if (isBlockingMove)
                 {
-
-                    BotMove();
+                    score += blockingMoveWeight;
                 }
-                else if (selectedDifficulty == "medium")
+                if (isScoringMove)
                 {
-                    MediumBotMove();
+                    score += scoringMoveWeight;
                 }
-                else if (selectedDifficulty == "hard")
-                {
-                    BotMoveBFS();
-                }
+
+                return score;
             }
-            else
+
+
+
+
+
+
+
+            private void DisableButtons()
             {
-                botTimer.Stop();
-            }
-        }
-
-        private void MediumBotMove()
-        {
-
-            List<Button> bestMoves = new List<Button>();
-            double bestScore = double.MinValue;
-
-            int goalX = poartaRed.Location.X;
-            int goalY = poartaRed.Location.Y;
-            int ballX = BallPB.Location.X;
-            int ballY = BallPB.Location.Y;
-
-            foreach (Control control in this.Controls)
-            {
-                if (control is Button button && control.Tag == "buton" && control.Visible)
+                foreach (Control control in this.Controls)
                 {
-                    int btnX = button.Location.X;
-                    int btnY = button.Location.Y;
-                    double distanceToGoal = Math.Sqrt(Math.Pow(btnX - goalX, 2) + Math.Pow(btnY - goalY, 2));
-                    bool isBlockingMove = IsBlockingMove(button);
-                    bool isScoringMove = IsScoringMove(button);
-                    double score = EvaluateScore(distanceToGoal, isBlockingMove, isScoringMove);
-
-                    if (score > bestScore)
+                    if (control is Button button && button.Tag == "buton")
                     {
-                        bestScore = score;
-                        bestMoves.Clear();
-                        bestMoves.Add(button);
-                    }
-                    else if (score == bestScore)
-                    {
-                        bestMoves.Add(button);
+                        button.BackColor = Color.Green;
+                        button.Enabled = false;
                     }
                 }
             }
 
-            if (bestMoves.Count > 0)
+            private void EnableButtons()
             {
-                Button selectedButton = bestMoves[random.Next(bestMoves.Count)];
-                BTNClick(selectedButton, EventArgs.Empty);
-            }
-        }
-
-        private bool IsBlockingMove(Button button)
-        {
-            foreach (Control control in this.Controls)
-            {
-                if (control is PictureBox && control.Bounds.IntersectsWith(button.Bounds))
+                foreach (Control control in this.Controls)
                 {
-                    return true;
+                    if (control is CustomButton button && (string)button.Tag == "buton" && button.Bounds.IntersectsWith(new Rectangle(BallPB.Location.X - BallPB.Width / 2 - 50, BallPB.Location.Y - BallPB.Height / 2 - 50, 150, 150)))
+                    {
+                        button.BackColor = Color.White;
+                        button.Enabled = true;
+                    }
                 }
             }
-            return false;
-        }
 
-        private bool IsScoringMove(Button button)
-        {
-            int btnX = button.Location.X;
-            int btnY = button.Location.Y;
-            int goalX = poartaRed.Location.X;
-            int goalY = poartaRed.Location.Y;
-            int ballX = BallPB.Location.X;
-            int ballY = BallPB.Location.Y;
 
-            double currentDistance = Math.Sqrt(Math.Pow(ballX - goalX, 2) + Math.Pow(ballY - goalY, 2));
-            double newDistance = Math.Sqrt(Math.Pow(btnX - goalX, 2) + Math.Pow(btnY - goalY, 2));
-
-            return newDistance < currentDistance;
-        }
-
-        private double EvaluateScore(double distanceToGoal, bool isBlockingMove, bool isScoringMove)
-        {
-
-            double distanceWeight = 1.0;
-            double blockingMoveWeight = 0.5;
-            double scoringMoveWeight = 0.7;
-            double score = distanceWeight * (1.0 / (distanceToGoal + 1));
-
-            if (isBlockingMove)
+            private void SchimbaVizibilitatea(object sender, EventArgs e)
             {
-                score += blockingMoveWeight;
-            }
-            if (isScoringMove)
-            {
-                score += scoringMoveWeight;
-            }
-
-            return score;
-        }
-
-
-
-
-
-
-
-        private void DisableButtons()
-        {
-            foreach (Control control in this.Controls)
-            {
-                if (control is Button button && button.Tag == "buton")
+                if (Rand.Text.ToLower() == "blue's turn")
                 {
-                    button.BackColor = Color.Green;
-                    button.Enabled = false;
+                    botTimer.Enabled = true;
+                }
+                else
+                {
+                    EnableButtons();
                 }
             }
-        }
-
-        private void EnableButtons()
-        {
-            foreach (Control control in this.Controls)
-            {
-                if (control is Button button && (string)button.Tag == "buton" && button.Bounds.IntersectsWith(new Rectangle(BallPB.Location.X - BallPB.Width / 2 - 100, BallPB.Location.Y - BallPB.Height / 2 - 100, 200, 200)))
-                {
-                    button.BackColor = Color.White;
-                    button.Enabled = true;
-                }
-            }
-        }
 
 
-        private void SchimbaVizibilitatea(object sender, EventArgs e)
-        {
-            if (Rand.Text.ToLower() == "blue's turn")
-            {
-                botTimer.Enabled = true;
-            }
-            else
-            {
-                EnableButtons();
-            }
-        }
-
-
-        // Use tuples for representing coordinates
+        ///
+        ///
+        /// 
+        /// 
+        /// 
         private Dictionary<Point, Point> bfsParents = new Dictionary<Point, Point>();
         private Dictionary<Point, int> bfsDistances = new Dictionary<Point, int>();
 
@@ -516,13 +489,18 @@ namespace fotbal
         {
             List<Point> neighbors = new List<Point>();
 
-            // Define movement directions (up, down, left, right)
             var directions = new (int dx, int dy)[]
             {
-        (0, -1), // Up
-        (0, 1),  // Down
-        (-1, 0), // Left
-        (1, 0)   // Right
+            (0, -56), // Up
+            (0, 56),  // Down
+            (-58, 0), // Left
+            (58, 0),   // Right
+            
+            (58, -56), // Up-Right
+            (58, 56),  // Down-Right
+
+            (-58, -56), // Up-Left
+            (-58, 56),  // Down-Left
             };
 
             foreach (var (dx, dy) in directions)
@@ -531,7 +509,6 @@ namespace fotbal
                 if (IsValidPoint(newPoint))
                 {
                     neighbors.Add(newPoint);
-                    //MessageBox.Show($"Neighbor found: {newPoint}");
                 }
             }
 
@@ -542,7 +519,46 @@ namespace fotbal
 
         private bool IsValidPoint(Point p)
         {
-            // Example validation: ensure the point is within bounds
+            Control player = BallPB;
+            Button button = FindClosestButton(p);
+            Button closestToThePlayer = FindClosestButton(player.Location);
+            if (p.X < 0 || p.Y < 0 || p.X >= this.ClientSize.Width || p.Y >= this.ClientSize.Height)
+            {
+                return false;
+            }
+            if ((servicii.PointSeIntersecteazaVertical((BallPB.Location), p) && BallPB.Location.Y == BallPB.Location.Y) || ((closestToThePlayer.Location.X == 20 || closestToThePlayer.Location.X == 484) && closestToThePlayer.Location.Y != button.Location.Y))
+            {
+                return false;
+            }
+            else if (servicii.PointSeIntersecteazaOrizontal((BallPB.Location), p) && BallPB.Location.X == button.Location.X)
+            {
+                return false;
+            }
+
+
+
+            else if (servicii.PointSeIntersecteazaOblicSJStanga(player, button).ToString() != "true" && player.Left > button.Right && player.Top > button.Bottom)
+            {
+                return false;
+            }
+            else if (servicii.PointSeIntersecteazaOblicSJDreapta(player, button).ToString() != "true" && player.Right < button.Left && player.Bottom > button.Top)
+            {
+                return false;
+            }
+
+
+
+            else if (servicii.PointSeIntersecteazaOblicJSStanga(player, button).ToString() != "false" && player.Left > button.Right && player.Bottom < button.Top)
+            {
+                return false;
+            }
+
+            else if (servicii.PointSeIntersecteazaOblicJSDreapta(player, button).ToString() != "false" && player.Right < button.Left && player.Top > button.Bottom)
+            {
+                return false;
+            }
+
+            //else if()
             return true;
         }
 
@@ -550,15 +566,11 @@ namespace fotbal
         private void BotMoveBFS()
         {
             Button ballButton = ButtonBehindTheBall();
-            Button goalButton = FindClosestButton(new Point(poartaRed.Location.X, poartaRed.Location.Y+15));
+            Button goalButton = FindClosestButton(new Point(262, 708));
 
-            if (ballButton == null || goalButton == null)
-            {
-                MessageBox.Show("No suitable buttons found for the ball or goal.");
-                return;
-            }
 
-            var ballPosition = new Point(ballButton.Location.X, ballButton.Location.Y - 1); // Adjust if needed
+
+            var ballPosition = new Point(ballButton.Location.X, ballButton.Location.Y);
             var goalPosition = new Point(goalButton.Location.X, goalButton.Location.Y);
 
             List<Point> path;
@@ -566,7 +578,6 @@ namespace fotbal
 
             if (path.Count > 1)
             {
-                // Process path steps, skipping the initial ball position
                 for (int i = 1; i < path.Count; i++)
                 {
                     var nextMove = path[i];
@@ -575,14 +586,12 @@ namespace fotbal
 
                     if (targetButton != null)
                     {
-                        Debug.WriteLine($"Moving to button at {nextMove}");
                         BTNClick(targetButton, EventArgs.Empty);
-                        // Consider adding a delay to make sure each move is processed
-                        //Task.Delay(1000).Wait(); // Adjust delay as needed
-                    }
-                    else
-                    {
-                       // MessageBox.Show($"Target button not found for the next move. Next move: {nextMove.ToString()}");
+                        if (Rand.Text.ToLower() == "red's turn")
+                        {
+                            botTimer.Stop();
+                            break;
+                        }
                     }
                 }
             }
@@ -601,27 +610,24 @@ namespace fotbal
             bfsDistances.Clear();
 
             Queue<Point> queue = new Queue<Point>();
-            queue.Enqueue(new Point(start.X, start.Y - 1));
-            bfsParents[new Point(start.X,start.Y-1)] = new Point(start.X, start.Y-1);
-            bfsDistances[new Point(start.X, start.Y - 1)] = 0;
+            queue.Enqueue(start);
+            bfsParents[start] = start;
+            bfsDistances[start] = 0;
 
             bool found = false;
 
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
-                //MessageBox.Show($"Processing point: {current}");
 
                 if (current.Equals(goal))
                 {
                     found = true;
-                    break; // Goal reached
+                    break;
                 }
 
                 foreach (var neighbor in GetNeighbors(current))
                 {
-                    //MessageBox.Show($"Checking neighbor: {neighbor}");
-
                     if (!bfsDistances.ContainsKey(neighbor) && IsValidPoint(neighbor))
                     {
                         bfsDistances[neighbor] = bfsDistances[current] + 1;
@@ -639,15 +645,16 @@ namespace fotbal
                 {
                     path.Add(at);
                 }
-                path.Add(new Point(start.X, start.Y - 2));
+                path.Add(start);
                 path.Reverse();
-                //MessageBox.Show($"Path found: {string.Join(" -> ", path)}");
             }
             else
             {
+                path = new List<Point>();
                 MessageBox.Show("No path found.");
             }
         }
+
 
 
 
@@ -669,8 +676,6 @@ namespace fotbal
                 {
                     var buttonPosition = new Point(button.Location.X + button.Width / 2, button.Location.Y + button.Height / 2);
                     double distance = Math.Sqrt(Math.Pow(buttonPosition.X - point.X, 2) + Math.Pow(buttonPosition.Y - point.Y, 2));
-
-                    //MessageBox.Show($"Button {button} at {buttonPosition} distance to target: {distance}");
 
                     if (distance < minDistance)
                     {
@@ -698,7 +703,560 @@ namespace fotbal
 
 
 
+        public void DrawCustomButton()
+        {
 
 
+
+            int[,] coordinates = new int[,]
+            {
+            {310, 26}, {252, 26}, {194, 26},
+            {310, 698}, {252, 698}, {194, 698},
+            {310, 642}, {484, 642}, {426, 642}, {368, 642}, {252, 642}, {194, 642}, {136, 642}, {78, 642},
+            {310, 586}, {484, 586}, {426, 586}, {368, 586}, {252, 586}, {194, 586}, {136, 586}, {78, 586},
+            {310, 530}, {484, 530}, {426, 530}, {368, 530}, {252, 530}, {194, 530}, {136, 530}, {78, 530},
+            {310, 474}, {484, 474}, {426, 474}, {368, 474}, {252, 474}, {194, 474}, {136, 474}, {78, 474},
+            {310, 418}, {484, 418}, {426, 418}, {368, 418}, {252, 418}, {194, 418}, {136, 418}, {78, 418}, {20, 418},
+            {20, 474}, {20, 530}, {20, 586}, {20, 642},
+            {310, 82}, {484, 82}, {426, 82}, {368, 82}, {252, 82}, {194, 82}, {136, 82}, {78, 82},
+            {310, 138}, {484, 138}, {426, 138}, {368, 138}, {252, 138}, {194, 138}, {136, 138}, {78, 138},
+            {310, 194}, {484, 194}, {426, 194}, {368, 194}, {252, 194}, {194, 194}, {136, 194}, {78, 194},
+            {310, 250}, {484, 250}, {426, 250}, {368, 250}, {252, 250}, {194, 250}, {136, 250}, {78, 250}, {20, 82},
+            {20, 138}, {20, 194}, {20, 250},
+            {310, 306}, {484, 306}, {426, 306}, {368, 306}, {252, 306}, {194, 306}, {136, 306}, {78, 306}, {20, 306},
+            {310, 362}, {484, 362}, {426, 362}, {368, 362}, {252, 362}, {194, 362}, {136, 362}, {78, 362}, {20, 362}
+            };
+
+            for (int i = 0; i < coordinates.GetLength(0); i++)
+            {
+                CustomButton button = new CustomButton();
+                button.Size = new Size(20, 20);
+                button.BackColor = Color.FromArgb(255, GenerateRandom(), GenerateRandom(), GenerateRandom());
+                button.Left = coordinates[i, 0];
+                button.Top = coordinates[i, 1];
+                button.Tag = "buton";
+                button.Click += new EventHandler(CustomBTNClick);
+                if (button.Bounds.X == 20)
+                {
+                    if (button.Bounds.Y == 82)
+                    {
+                        button.StangaSus = true;
+                        button.Sus = true;
+                        button.DreaptaSus = true;
+                        button.Stanga = true;
+                        button.Dreapta = true;
+                        button.Jos = true;
+                        button.StangaJos = true;
+                    }
+                    else if (button.Bounds.Y == 642)
+                    {
+                        button.StangaSus = true;
+                        button.Sus = true;
+                        button.Stanga = true;
+                        button.Dreapta = true;
+                        button.StangaJos = true;
+                        button.Jos = true;
+                        button.DreaptaJos = true;
+                    }
+                    else
+                    {
+                        button.StangaSus = true;
+                        button.Stanga = true;
+                        button.StangaJos = true;
+                        button.Sus = true;
+                        button.Jos = true;
+                    }
+
+                }
+                else if (button.Bounds.X == 484)
+                {
+                    if (button.Bounds.Y == 82)
+                    {
+                        button.StangaSus = true;
+                        button.Sus = true;
+                        button.DreaptaSus = true;
+                        button.Stanga = true;
+                        button.Dreapta = true;
+                        button.Jos = true;
+                        button.DreaptaJos = true;
+                    }
+                    else if (button.Bounds.Y == 642)
+                    {
+                        button.Sus = true;
+                        button.DreaptaSus = true;
+                        button.Stanga = true;
+                        button.Dreapta = true;
+                        button.StangaJos = true;
+                        button.Jos = true;
+                        button.DreaptaJos = true;
+                    }
+                    else
+                    {
+                        button.DreaptaSus = true;
+                        button.Dreapta = true;
+                        button.DreaptaJos = true;
+                        button.Sus = true;
+                        button.Jos = true;
+                    }
+                }
+                else
+                {
+                    if (button.Bounds.Y == 26)
+                    {
+                        if (button.Bounds.X == 194)
+                        {
+                            button.StangaSus = true;
+                            button.Sus = true;
+                            button.DreaptaSus = true;
+                            button.Stanga = true;
+                            button.Dreapta = true;
+                            button.StangaJos = true;
+                            button.Jos = true;
+                        }
+                        else if (button.Bounds.X == 310)
+                        {
+                            button.StangaSus = true;
+                            button.Sus = true;
+                            button.DreaptaSus = true;
+                            button.Stanga = true;
+                            button.Dreapta = true;
+                            button.DreaptaJos = true;
+                            button.Jos = true;
+                        }
+
+                    }
+
+                    else if (button.Bounds.Y == 698)
+                    {
+                        if (button.Bounds.X == 194)
+                        {
+                            button.StangaSus = true;
+                            button.Sus = true;
+                            button.Stanga = true;
+                            button.Dreapta = true;
+                            button.StangaJos = true;
+                            button.Jos = true;
+                            button.DreaptaJos = true;
+                        }
+                        else if (button.Bounds.X == 310)
+                        {
+                            button.Sus = true;
+                            button.DreaptaSus = true;
+                            button.Stanga = true;
+                            button.Dreapta = true;
+                            button.StangaJos = true;
+                            button.Jos = true;
+                            button.DreaptaJos = true;
+                        }
+
+                    }
+
+                    else if (button.Bounds.Y == 82)
+                    {
+                        if (button.Bounds.X == 194)
+                        {
+                            button.StangaSus = true;
+                            button.Sus = true;
+                            button.Stanga = true;
+                        }
+                        else if (button.Bounds.X == 310)
+                        {
+                            button.Sus = true;
+                            button.DreaptaSus = true;
+                            button.Dreapta = true;
+                        }
+                        else if (button.Bounds.X != 252)
+                        {
+                            button.StangaSus = true;
+                            button.Sus = true;
+                            button.DreaptaSus = true;
+                            button.Stanga = true;
+                            button.Dreapta = true;
+                        }
+                    }
+
+                    else if (button.Bounds.Y == 642)
+                    {
+                        if (button.Bounds.X == 194)
+                        {
+                            button.Stanga = true;
+                            button.StangaJos = true;
+                            button.Jos = true;
+                        }
+                        else if (button.Bounds.X == 310)
+                        {
+                            button.Dreapta = true;
+                            button.Jos = true;
+                            button.DreaptaJos = true;
+                        }
+                        else if (button.Bounds.X != 252)
+                        {
+                            button.StangaJos = true;
+                            button.Jos = true;
+                            button.DreaptaJos = true;
+                            button.Stanga = true;
+                            button.Dreapta = true;
+                        }
+                    }
+
+                }
+                this.Controls.Add(button);
+            }
+            Button restartBTN = new Button();
+            restartBTN.Size = new Size(96, 28);
+            restartBTN.Left = 384;
+            restartBTN.Top = 677;
+            restartBTN.BackColor = Color.Green;
+            restartBTN.Text = "Restart";
+            restartBTN.FlatStyle = FlatStyle.Popup;
+            restartBTN.Click += new EventHandler(Restart_btn_Click);
+
+
+            this.Controls.Add(restartBTN);
+        }
+
+        public int GenerateRandom()
+        {
+            return random.Next(255);
+        }
+
+
+
+
+
+
+
+
+
+        private void CustomBTNClick(object sender, EventArgs e)
+        {
+            CustomButton cb = (CustomButton)sender;
+            CustomButton playerButton = new CustomButton();
+            playerButton = ButtonBehindThePlayer();
+            int x, y;
+            x = cb.Location.X;
+            y = cb.Location.Y;
+            int a, b;
+            a = BallPB.Location.X;
+            b = BallPB.Location.Y;
+
+            BallPB.SetBounds(cb.Location.X - 20 / 4, cb.Location.Y - 20 / 4, BallPB.Width, BallPB.Height);
+            intersects = ReturnIntesectationState(cb);
+
+
+
+
+
+            if (x < a - 20 / 4 && y - 20 / 4 == b)
+            {
+                //stanga
+                servicii.LinieStanga(x, y, a, b);
+                playerButton.Stanga = true;
+                cb.Dreapta = true;
+                if (!intersects) { servicii.Turn(Rand); }
+            }
+            else if (y == b + 20 / 4 && x > a + 20 / 4)
+            {
+                //dreapta
+                servicii.LinieDreapta(x, y, a, b);
+                playerButton.Dreapta = true;
+                cb.Stanga = true;
+                if (!intersects) { servicii.Turn(Rand); }
+            }
+            else if (y - 20 / 4 > b && x == a + 20 / 4)
+            {
+                //jos
+                servicii.LinieJos(x, y, a, b);
+                playerButton.Jos = true;
+                cb.Sus = true;
+                if (!intersects) { servicii.Turn(Rand); }
+            }
+            else if (y - 20 / 4 < b && x - 20 / 4 == a)
+            {
+                //sus
+                servicii.LinieSus(x, y, a, b);
+                playerButton.Sus = true;
+                cb.Jos = true;
+                if (!intersects) { servicii.Turn(Rand); }
+            }
+            else if (x - 20 / 4 > a && y < b + 20 / 4)
+            {
+                //dreapta sus
+                servicii.LinieDreaptaSus(x, y, a, b);
+                playerButton.DreaptaSus = true;
+                cb.StangaJos = true;
+                if (!intersects) { servicii.Turn(Rand); }
+            }
+            else if (x - 20 / 4 > a && y > b + 20 / 4)
+            {
+                //dreapta jos
+                servicii.LinieDreaptaJos(x, y, a, b);
+                playerButton.DreaptaJos = true;
+                cb.StangaSus = true;
+                if (!intersects) { servicii.Turn(Rand); }
+            }
+            else if (x - 20 / 4 < a && y < b + 20 / 4)
+            {
+                //stanga sus
+                servicii.LinieStangaSus(x, y, a, b);
+                playerButton.StangaSus = true;
+                cb.DreaptaJos = true;
+                if (!intersects) { servicii.Turn(Rand); }
+            }
+            else if (x - 20 / 4 < a && y > b + 20 / 4)
+            {
+                //stanga jos
+                servicii.LinieStangaJos(x, y, a, b);
+                playerButton.StangaJos = true;
+                cb.DreaptaSus = true;
+                if (!intersects) { servicii.Turn(Rand); }
+            }
+
+            //MessageBox.Show("stanga sus: " + cb.StangaSus + "\n sus: " + cb.Sus + "\n dreapta sus: " + cb.DreaptaSus + "\n stanga: " + cb.Stanga + "\n dreapta: " + cb.Dreapta + "\n stanga jos: " + cb.StangaJos + "\n jos: " + cb.Jos + "\n dreapta jos: " + cb.DreaptaJos);
+        }
+
+        public bool LeftIsValid(CustomButton current, CustomButton target)
+        {
+            if (current.Stanga == true || target.Dreapta == true)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool RightIsValid(CustomButton current, CustomButton target)
+        {
+            if (current.Dreapta == true || target.Stanga == true)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool UpIsValid(CustomButton current, CustomButton target)
+        {
+            if (current.Sus == true || target.Jos == true)
+            {
+                return false;
+            }
+            return true;
+        }
+        public bool DownIsValid(CustomButton current, CustomButton target)
+        {
+            if (current.Jos == true || target.Sus == true)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool UpLeftIsValid(CustomButton current, CustomButton target)
+        {
+            if (current.StangaSus == true || target.DreaptaJos == true)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool DownLeftIsValid(CustomButton current, CustomButton target)
+        {
+            if (current.StangaJos == true || target.DreaptaSus == true)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool UpRightIsValid(CustomButton current, CustomButton target)
+        {
+            if (current.DreaptaSus == true || target.StangaJos == true)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool DownRightIsValid(CustomButton current, CustomButton target)
+        {
+            if (current.DreaptaJos == true || target.StangaSus == true)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public CustomButton ButtonBehindThePlayer()
+        {
+            foreach (Control control in this.Controls)
+            {
+                if (control is CustomButton button && (string)button.Tag == "buton" && BallPB.Bounds.IntersectsWith(button.Bounds))
+                {
+                    return button;
+                }
+            }
+            return null; //not found
+        }
+        public void ShowTheButtons()
+        {
+            int x = ButtonBehindThePlayer().Left;
+            int y = ButtonBehindThePlayer().Top;
+
+            foreach (Control control in this.Controls)
+            {
+                if (control is CustomButton customButton && (string)customButton.Tag == "buton" && BallPB.Bounds.IntersectsWith(customButton.Bounds) == false)
+                {
+                    if (customButton.Location.X == x)
+                    {
+                        if (customButton.Location.Y > y && customButton.Location.Y < y + 70)//jos
+                        {
+                            if (customButton.Sus == false)
+                            {
+                                customButton.Visible = true;
+                            }
+                            else customButton.Visible = false;
+
+
+                            if ((customButton.Bounds.X == 310 || customButton.Bounds.X == 194) && BallPB.Bounds.Y == 642 - 20 / 4)
+                            {
+                                customButton.Visible = false;
+                            }
+                        }
+                        else if (customButton.Location.Y < y && customButton.Location.Y > y - 70)//sus
+                        {
+                            if (customButton.Jos == false)
+                            {
+                                customButton.Visible = true;
+                            }
+                            else if ((customButton.Bounds.X == 310 || customButton.Bounds.X == 194) && BallPB.Bounds.Y == 82 - 20 / 4)
+                            {
+                                customButton.Visible = false;
+                            }
+                            else customButton.Visible = false;
+
+
+
+                        }
+                        else { customButton.Visible = false; }
+
+                    }
+
+                    else if (customButton.Location.Y == y)
+                    {
+
+                        if (customButton.Location.X > x && customButton.Location.X < x + 70)//dreapta
+                        {
+                            if (customButton.Stanga == false)
+                            {
+                                customButton.Visible = true;
+                            }
+                            else if ((customButton.Bounds.X < 252 || customButton.Bounds.X > 310) && customButton.Bounds.Y == 82)
+                            {
+                                customButton.Visible = false;
+                            }
+                            else if ((customButton.Bounds.X < 252 || customButton.Bounds.X > 310) && customButton.Bounds.Y == 642)
+                            {
+                                customButton.Visible = false;
+                            }
+                            else customButton.Visible = false;
+
+
+                        }
+                        else if (customButton.Location.X < x && customButton.Location.X > x - 70)//stanga
+                        {
+                            if (customButton.Dreapta == false)
+                            {
+                                customButton.Visible = true;
+                            }
+                            else if ((customButton.Bounds.X < 194 || customButton.Bounds.X > 252) && customButton.Bounds.Y == 82)
+                            {
+                                customButton.Visible = false;
+                            }
+                            else if ((customButton.Bounds.X < 194 || customButton.Bounds.X > 252) && customButton.Bounds.Y == 642)
+                            {
+                                customButton.Visible = false;
+                            }
+                            else customButton.Visible = false;
+
+
+
+                        }
+                        else { customButton.Visible = false; }
+
+                    }
+
+
+                    else if (customButton.Location.X > x && customButton.Location.X < x + 70)
+                    {
+                        if (customButton.Location.Y > y && customButton.Location.Y < y + 70)//dreapta jos
+                        {
+                            if (customButton.StangaSus == false)
+                            {
+                                customButton.Visible = true;
+                            }
+                            else customButton.Visible = false;
+
+                        }
+                        else if (customButton.Location.Y < y && customButton.Location.Y > y - 70)//dreapta sus
+                        {
+                            if (customButton.StangaJos == false)
+                            {
+                                customButton.Visible = true;
+                            }
+                            else customButton.Visible = false;
+
+                        }
+                        else { customButton.Visible = false; }
+
+
+                    }
+                    else if (customButton.Location.X < x && customButton.Location.X > x - 70)
+                    {
+                        if (customButton.Location.Y > y && customButton.Location.Y < y + 70)//stanga jos
+                        {
+                            if (customButton.DreaptaSus == false)
+                            {
+                                customButton.Visible = true;
+                            }
+                            else customButton.Visible = false;
+
+
+                        }
+                        else if (customButton.Location.Y < y && customButton.Location.Y > y - 70)//stanga sus
+                        {
+                            if (customButton.DreaptaJos == false)
+                            {
+                                customButton.Visible = true;
+                            }
+                            else customButton.Visible = false;
+
+                        }
+                        else { customButton.Visible = false; }
+
+                    }
+                    else { customButton.Visible = false; }
+                }
+            }
+        }
+        public bool ReturnIntesectationState(CustomButton button)
+        {
+
+            if (button.StangaSus == true || button.Sus == true || button.DreaptaSus == true || button.Stanga == true || button.Dreapta == true || button.StangaJos == true || button.Jos == true || button.DreaptaJos == true)
+            {
+                return true;
+            }
+
+            return false;
+        }
+        public bool DirectionsAvailable(CustomButton button)
+        {
+
+            if (button.StangaSus == true && button.Sus == true && button.DreaptaSus == true && button.Stanga == true && button.Dreapta == true && button.StangaJos == true && button.Jos == true && button.DreaptaJos == true)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
